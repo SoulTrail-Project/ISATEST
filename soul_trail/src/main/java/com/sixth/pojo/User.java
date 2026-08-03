@@ -13,5 +13,6 @@ public class User {
     private Integer role;       // 0=普通用户 1=管理员（管理后台用）
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String test1;
     // getter / setter 省略
 }
