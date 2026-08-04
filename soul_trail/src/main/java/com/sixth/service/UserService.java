@@ -1,4 +1,9 @@
 package com.sixth.service;
 
-public interface UserService {
+import com.sixth.soul_trail.pojo.User;
+
+public class UserService {
+
+    boolean register(User user);
+
 }
