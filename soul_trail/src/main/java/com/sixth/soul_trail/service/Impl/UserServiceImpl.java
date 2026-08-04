@@ -1,4 +1,4 @@
-package com.sixth.service.Impl;
+package com.sixth.soul_trail.service.Impl;
 
 import com.sixth.soul_trail.mapper.UserMapper;
 import com.sixth.soul_trail.pojo.User;
@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService{
 
         // 2.前面检查没有问题，准备插入数据库
         // 2.1给密码进行BCrypt加密，登录时必须使用matches()比对
-        String bcryptPwd = passwordEncoder.encode(user.getPassword)
+        String bcryptPwd = passwordEncoder.encode(user.getPassword);
         user.setPassword(bcryptPwd);
 
         // 2.2插入数据库

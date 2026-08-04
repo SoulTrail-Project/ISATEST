@@ -1,4 +1,4 @@
-package com.sixth.pojo;
+package com.sixth.soul_trail.pojo;
 
 import lombok.Data;
 
