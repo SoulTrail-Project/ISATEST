@@ -1,4 +1,7 @@
 package com.sixth.service;
 
-public interface UserService {
+public class UserService {
+
+    boolean register(User user);
+
 }
