@@ -1,4 +1,4 @@
-package com.sixth.config;
+package com.sixth.soul_trail.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.sixth.dao.controller;
+package com.sixth.soul_trail.controller;
 
 import com.sixth.soul_trail.pojo.User;
 import com.sixth.soul_trail.service.UserService;
