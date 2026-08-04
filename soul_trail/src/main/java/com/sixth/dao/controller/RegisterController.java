@@ -1,5 +1,13 @@
 package com.sixth.dao.controller;
 
+import com.sixth.soul_trail.pojo.User;
+import com.sixth.soul_trail.service.UserService;
+import com.sixth.soul_trail.util.Result;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/user")
