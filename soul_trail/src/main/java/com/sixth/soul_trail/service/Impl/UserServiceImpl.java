@@ -39,4 +39,12 @@ public class UserServiceImpl implements UserService{
 
     }
 
+    @Override
+    public User findByUserName(String username) {
+        //1.查询用户名是否存在
+        User existUser = userMapper.selectByUsername(username);
+    return existUser;
+    }
+
+
 }
