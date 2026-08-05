@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+                "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sixth.soul_trail.mapper.DiaryMapper">
+
+    <resultMap id="DiaryResultMap" type="com.sixth.soul_trail.pojo.Diary">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.sixth.soul_trail.pojo.Diary" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO diary (user_id, title, content)
+        VALUES (#{userId}, #{title}, #{content})
+    </insert>
+
+    <select id="selectPageByUserId" resultMap="DiaryResultMap">
+        SELECT id, title, content, created_at, updated_at
+        FROM diary
+        WHERE user_id = #{userId} AND is_deleted = 0
+        ORDER BY created_at DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countByUserId" resultType="long">
+        SELECT COUNT(*) FROM diary WHERE user_id = #{userId} AND is_deleted = 0
+    </select>
+
+    <select id="selectByIdAndUserId" resultMap="DiaryResultMap">
+        SELECT * FROM diary WHERE id = #{id} AND user_id = #{userId} AND is_deleted = 0
+    </select>
+
+    <update id="update" parameterType="com.sixth.soul_trail.pojo.Diary">
+        UPDATE diary SET title = #{title}, content = #{content}
+        WHERE id = #{id} AND user_id = #{userId} AND is_deleted = 0
+    </update>
+
+    <update id="softDeleteById">
+        UPDATE diary SET is_deleted = 1 WHERE id = #{id} AND user_id = #{userId}
+    </update>
+
+</mapper>
