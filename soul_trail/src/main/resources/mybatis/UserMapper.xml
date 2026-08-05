@@ -5,6 +5,13 @@
 
 <mapper namespace="com.sixth.soul_trail.mapper.UserMapper">
 
+    <!-- 根据用户名查询 -->
+    <select id="selectByUsername" resultType="User">
+        select id, username, password
+        from user
+        where username = #{username}
+    </select>
+
     <!-- 新增用户 -->
     <insert id="insert">
         insert into user (username,password)
