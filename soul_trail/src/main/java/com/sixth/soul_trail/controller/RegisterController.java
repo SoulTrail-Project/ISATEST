@@ -19,7 +19,7 @@ public class RegisterController {
     /*
     * 用户注册接口
     * */
-    @POSTMapping("/register")
+    @PostMapping("/register")
     public Result register(@RequestBody User user) {
         // 校验用户表单是否为空，为空打回
         if (user.getUsername() == null || user.getPassword() == null) return Result.error("用户、密码不能为空");
