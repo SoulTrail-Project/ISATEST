@@ -31,4 +31,9 @@ public class Result<T> {
 
         return new Result(1, message, null);
     }
+
+    // ========== 新增这个方法 ==========
+    public static <E> Result<E> error(int code, String message) {
+        return new Result<>(code, message, null);
+    }
 }

@@ -31,12 +31,12 @@ public class UserController {
     @PostMapping("/register")
     public Result register(@RequestBody User user) {
         // 校验用户表单是否为空，为空打回
-        if (user.getUsername() == null || user.getPassword() == null) return Result.error("用户、密码不能为空");
+        if (user.getUsername() == null || user.getPassword() == null) return Result.error(400,"用户、密码不能为空");
         // 交给service层进行注册业务，并返回结果
         boolean success = userService.register(user);
         // 根据结果进行处理
         // 前端记得重定向到登录界面
-        return success ? Result.success("注册成功，请登录") : Result.error("用户名已存在");
+        return success ? Result.success("注册成功，请登录") : Result.error(400,"用户名已存在");
     }
     /*
     * 用户登录接口
@@ -46,12 +46,12 @@ public class UserController {
         //判断用户是否存在
         User dbUser = userService.findByUserName(loginUser.getUsername());
         if  (dbUser == null) {
-            return Result.error("用户不存在");
+            return Result.error(400,"用户不存在");
         }
         //判断密码是否正确
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         if(!passwordEncoder.matches(loginUser.getPassword(), dbUser.getPassword())) {
-            return Result.error("密码错误");
+            return Result.error(400,"密码错误");
         }
         String token = JwtUtil.genToken(loginUser.getId());
         //用户信息
