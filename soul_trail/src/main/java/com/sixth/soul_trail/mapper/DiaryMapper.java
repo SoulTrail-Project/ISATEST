@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface DiaryMapper {
@@ -22,4 +23,6 @@ public interface DiaryMapper {
     int update(Diary diary);
 
     int softDeleteById(@Param("id") Long id, @Param("userId") Long userId);
+
+    List<Map<String, Object>> countByEmotionType(Long userId);
 }
