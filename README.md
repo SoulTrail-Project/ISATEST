@@ -1,25 +1,20 @@
-### 接口8
-统计总览
-接口返回详情：
-```json
-  {
-  "code": 200,
-  "message": "获取成功",
-  "data": {
-    "totalDiaryCount": 56,
-    "activeDays": 30,
-    "sentimentRatio": {
-      "positive": 0.55,
-      "neutral": 0.25,
-      "negative": 0.20
-    },
-    "averageScore": 0.62,
-    "streakDays": 5,
-    "longestStreak": 12,
-    "currentMoodSummary": {
-      "mostFrequentMood": "happy",
-      "mostFrequentMoodCount": 18
-    }
-  }
-}
-```
+# ISATEST
+
+后端心灵轨迹（暂定名称）项目仓库创建测试
+123
+
+- register(注册接口) 初稿 26/8/4
+  
+  - 部分文件结构已提前创建，大家在此基础上新增、修改即可 19:36
+  - 修复了文件结构错误等问题 21:01
+  - 修复了代码报错等问题 23:59
+
+- login-jwt 登录jwt认证初稿
+  
+  - 登录接口
+  
+  - jwt与拦截器
+  
+  - 连接云数据库，创建用户测试
+  
+  - VO对象响应接口文档
