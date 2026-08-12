@@ -1,27 +1,25 @@
-package com.sixth.soul_trail.service.Impl;
+package com.sixth.soul_trail.processor;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sixth.soul_trail.VO.CurrentMoodSummary;
+import com.sixth.soul_trail.VO.DiaryStatisticsData;
 import com.sixth.soul_trail.VO.SentTimeRatio;
 import com.sixth.soul_trail.mapper.StatsMapper;
 import com.sixth.soul_trail.pojo.Diary;
-import com.sixth.soul_trail.VO.DiaryStatisticsData;
-import com.sixth.soul_trail.service.StatsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Service
-public class SummaryServiceImpl implements StatsService{
+@Component
+public class SummaryStatsProcesser {
 
     @Autowired
     private StatsMapper statsMapper;
 
-    @Override
     public DiaryStatisticsData getSummaryStats(Long userId) {
         return new DiaryStatisticsData(
                 getTotalDiaryCount(userId),
@@ -176,5 +174,4 @@ public class SummaryServiceImpl implements StatsService{
         long count = (long) top.get("count");
         return new CurrentMoodSummary(mood, (int) count);
     }
-
 }
