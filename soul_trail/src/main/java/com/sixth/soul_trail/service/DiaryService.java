@@ -1,19 +1,19 @@
 package com.sixth.soul_trail.service;
 
-import com.sixth.soul_trail.pojo.Diary;
+import com.sixth.soul_trail.pojo.Summary;
 import java.util.List;
 
 public interface DiaryService {
 
-    Diary create(Long userId, String title, String content);
+    Summary create(Long userId, String title, String content);
 
-    List<Diary> list(Long userId, int page, int pageSize);
+    List<Summary> list(Long userId, int page, int pageSize);
 
     long count(Long userId);
 
-    Diary getById(Long userId, Long diaryId);
+    Summary getById(Long userId, Long diaryId);
 
-    Diary update(Long userId, Long diaryId, String title, String content);
+    Summary update(Long userId, Long diaryId, String title, String content);
 
     void delete(Long userId, Long diaryId);
 }
