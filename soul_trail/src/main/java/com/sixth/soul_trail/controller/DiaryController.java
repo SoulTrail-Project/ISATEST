@@ -1,7 +1,7 @@
 package com.sixth.soul_trail.controller;
 
 import com.sixth.soul_trail.common.Result;
-import com.sixth.soul_trail.pojo.Summary;
+import com.sixth.soul_trail.pojo.Diary;
 import com.sixth.soul_trail.service.DiaryService;
 import com.sixth.soul_trail.utils.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class DiaryController {
      * 请求体：{ "title": "xxx", "content": "xxx" }
      */
     @PostMapping
-    public Result<Summary> create(@RequestBody Map<String, String> body) {
+    public Result<Diary> create(@RequestBody Map<String, String> body) {
         Long userId = SecurityUtil.getCurrentUserId();
         String title = body.get("title");
         String content = body.get("content");
@@ -32,7 +32,7 @@ public class DiaryController {
             return Result.error(400, "日记内容不能为空");
         }
 
-        Summary diary = diaryService.create(userId, title, content);
+        Diary diary = diaryService.create(userId, title, content);
         return Result.success(diary);
     }
 
@@ -43,7 +43,7 @@ public class DiaryController {
     public Result<Map<String, Object>> list(@RequestParam(defaultValue = "1") int page,
                                             @RequestParam(defaultValue = "10") int pageSize) {
         Long userId = SecurityUtil.getCurrentUserId();
-        List<Summary> records = diaryService.list(userId, page, pageSize);
+        List<Diary> records = diaryService.list(userId, page, pageSize);
         long total = diaryService.count(userId);
 
         Map<String, Object> data = new HashMap<>();
@@ -59,9 +59,9 @@ public class DiaryController {
      * GET /api/diaries/{id}
      */
     @GetMapping("/{id}")
-    public Result<Summary> getById(@PathVariable("id") Long diaryId) {
+    public Result<Diary> getById(@PathVariable("id") Long diaryId) {
         Long userId = SecurityUtil.getCurrentUserId();
-        Summary diary = diaryService.getById(userId, diaryId);
+        Diary diary = diaryService.getById(userId, diaryId);
         return Result.success(diary);
     }
 
@@ -70,7 +70,7 @@ public class DiaryController {
      * 请求体：{ "title": "xxx", "content": "xxx" }
      */
     @PutMapping("/{id}")
-    public Result<Summary> update(@PathVariable("id") Long diaryId,
+    public Result<Diary> update(@PathVariable("id") Long diaryId,
                                   @RequestBody Map<String, String> body) {
         Long userId = SecurityUtil.getCurrentUserId();
         String title = body.get("title");
@@ -80,7 +80,7 @@ public class DiaryController {
             return Result.error(400, "日记内容不能为空");
         }
 
-        Summary diary = diaryService.update(userId, diaryId, title, content);
+        Diary diary = diaryService.update(userId, diaryId, title, content);
         return Result.success(diary);
     }
 

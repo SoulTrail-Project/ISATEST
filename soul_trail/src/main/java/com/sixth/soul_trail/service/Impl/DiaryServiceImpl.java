@@ -5,7 +5,7 @@ import com.sixth.soul_trail.VO.WordCloudVO;
 import com.sixth.soul_trail.exception.BusinessException;
 import com.sixth.soul_trail.mapper.DiaryKeywordMapper;
 import com.sixth.soul_trail.mapper.DiaryMapper;
-import com.sixth.soul_trail.pojo.Summary;
+import com.sixth.soul_trail.pojo.Diary;
 import com.sixth.soul_trail.service.DiaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,8 +36,8 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
     @Override
-    public Summary create(Long userId, String title, String content) {
-        Summary diary = new Summary();
+    public Diary create(Long userId, String title, String content) {
+        Diary diary = new Diary();
         diary.setUserId(userId);
         diary.setTitle(title != null ? title : "");
         diary.setContent(content);
@@ -46,7 +46,7 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
     @Override
-    public List<Summary> list(Long userId, int page, int pageSize) {
+    public List<Diary> list(Long userId, int page, int pageSize) {
         int offset = (page - 1) * pageSize;
         return diaryMapper.selectPageByUserId(userId, offset, pageSize);
     }
@@ -57,8 +57,8 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
     @Override
-    public Summary getById(Long userId, Long diaryId) {
-        Summary diary = diaryMapper.selectByIdAndUserId(diaryId, userId);
+    public Diary getById(Long userId, Long diaryId) {
+        Diary diary = diaryMapper.selectByIdAndUserId(diaryId, userId);
         if (diary == null) {
             throw new BusinessException(404, "日记不存在");
         }
@@ -66,8 +66,8 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
     @Override
-    public Summary update(Long userId, Long diaryId, String title, String content) {
-        Summary diary = diaryMapper.selectByIdAndUserId(diaryId, userId);
+    public Diary update(Long userId, Long diaryId, String title, String content) {
+        Diary diary = diaryMapper.selectByIdAndUserId(diaryId, userId);
         if (diary == null) {
             throw new BusinessException(404, "日记不存在");
         }

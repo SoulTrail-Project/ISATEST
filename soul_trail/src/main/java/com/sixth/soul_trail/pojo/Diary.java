@@ -18,6 +18,8 @@ public class Diary {
 
     private Long userId;
 
+    private String title;
+
     private String content;
 
     private String moodType;
