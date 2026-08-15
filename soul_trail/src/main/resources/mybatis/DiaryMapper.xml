@@ -3,7 +3,7 @@
                 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sixth.soul_trail.mapper.DiaryMapper">
 
-    <resultMap id="DiaryResultMap" type="com.sixth.soul_trail.pojo.Diary">
+    <resultMap id="DiaryResultMap" type="com.sixth.soul_trail.VO.Summary">
         <id property="id" column="id"/>
         <result property="userId" column="user_id"/>
         <result property="title" column="title"/>
@@ -13,7 +13,7 @@
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
-    <insert id="insert" parameterType="com.sixth.soul_trail.pojo.Diary" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insert" parameterType="com.sixth.soul_trail.VO.Summary" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO diary (user_id, title, content)
         VALUES (#{userId}, #{title}, #{content})
     </insert>
@@ -34,7 +34,7 @@
         SELECT * FROM diary WHERE id = #{id} AND user_id = #{userId} AND is_deleted = 0
     </select>
 
-    <update id="update" parameterType="com.sixth.soul_trail.pojo.Diary">
+    <update id="update" parameterType="com.sixth.soul_trail.VO.Summary">
         UPDATE diary SET title = #{title}, content = #{content}
         WHERE id = #{id} AND user_id = #{userId} AND is_deleted = 0
     </update>

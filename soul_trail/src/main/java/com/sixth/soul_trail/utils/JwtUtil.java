@@ -22,6 +22,7 @@ public class JwtUtil {
                 .withExpiresAt(expire)
                 .sign(Algorithm.HMAC256(SECRET));
     }
+
     //接收token,验证token,并返回业务数据
     public static Long parseToken(String token) {
         try {
@@ -32,4 +33,5 @@ public class JwtUtil {
             return null;
         }
     }
+
 }
