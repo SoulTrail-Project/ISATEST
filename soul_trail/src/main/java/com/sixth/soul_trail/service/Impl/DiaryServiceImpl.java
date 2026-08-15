@@ -1,19 +1,39 @@
 package com.sixth.soul_trail.service.Impl;
 
+import com.sixth.soul_trail.VO.EmotionDistributionVO;
+import com.sixth.soul_trail.VO.WordCloudVO;
 import com.sixth.soul_trail.exception.BusinessException;
+import com.sixth.soul_trail.mapper.DiaryKeywordMapper;
 import com.sixth.soul_trail.mapper.DiaryMapper;
 import com.sixth.soul_trail.pojo.Summary;
 import com.sixth.soul_trail.service.DiaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class DiaryServiceImpl implements DiaryService {
 
     @Autowired
     private DiaryMapper diaryMapper;
+
+    @Autowired
+    private DiaryKeywordMapper diaryKeywordMapper;
+
+    // moodType -> {中文名, 颜色}，用于接口10情绪分布映射
+    private static final Map<String, String[]> MOOD_META = new HashMap<>();
+    static {
+        MOOD_META.put("happy",   new String[]{"开心", "#FFD700"});
+        MOOD_META.put("calm",    new String[]{"平静", "#87CEEB"});
+        MOOD_META.put("anxious", new String[]{"焦虑", "#FFA500"});
+        MOOD_META.put("sad",     new String[]{"难过", "#6495ED"});
+        MOOD_META.put("angry",   new String[]{"愤怒", "#FF4500"});
+        MOOD_META.put("tired",   new String[]{"疲惫", "#808080"});
+    }
 
     @Override
     public Summary create(Long userId, String title, String content) {
@@ -64,4 +84,25 @@ public class DiaryServiceImpl implements DiaryService {
             throw new BusinessException(404, "日记不存在");
         }
     }
+
+    @Override
+    public List<EmotionDistributionVO> emotionDistribution(Long userId) {
+        List<Map<String,Object>> rows = diaryMapper.countByEmotionType(userId);
+        List<EmotionDistributionVO> result = new ArrayList<>();
+        for (Map<String,Object> row : rows) {
+            String mood = (String) row.get("moodType");
+            Long cnt = ((Number) row.get("value")).longValue();
+            String[] meta = MOOD_META.getOrDefault(mood, new String[]{mood, "#CCCCCC"});
+            EmotionDistributionVO vo = new EmotionDistributionVO();
+            vo.setName(meta[0]); vo.setValue(cnt); vo.setMoodType(mood); vo.setColor(meta[1]);
+            result.add(vo);
+        }
+        return result;
+    }
+
+    @Override
+    public List<WordCloudVO> wordCloud(Long userId) {
+        return diaryKeywordMapper.selectWordCloud(userId);
+    }
+
 }
