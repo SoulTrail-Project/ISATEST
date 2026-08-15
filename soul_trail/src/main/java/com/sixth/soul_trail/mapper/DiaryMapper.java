@@ -25,6 +25,7 @@ public interface DiaryMapper {
 
     int softDeleteById(@Param("id") Long id, @Param("userId") Long userId);
 
+    List<Map<String, Object>> countByEmotionType(Long userId);
     // ========== 新加这2个方法 ==========
 
     /**

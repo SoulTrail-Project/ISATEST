@@ -14,5 +14,4 @@ public class User {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String test1;
-    // getter / setter 省略
 }

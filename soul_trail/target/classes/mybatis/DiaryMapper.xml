@@ -49,41 +49,5 @@
         FROM diary
         WHERE user_id = #{userId} # AND is_deleted =0
         GROUP BY mood_type
-    <!-- ============================================================ -->
-    <!-- 按天聚合统计日记数据                                           -->
-    <!-- 功能：统计每天有几条日记、平均分多少、出现最多的心情是什么        -->
-    <!-- 性能：一条SQL搞定，比把所有数据拉到Java里算快很多               -->
-    <!-- ============================================================ -->
-    <select id="selectDailyStats" resultType="java.util.Map">
-        SELECT
-        DATE(created_at) AS diary_date,
-        COUNT(*) AS diary_count,
-        ROUND(AVG(emotion_score), 2) AS avg_score,
-        <!-- 取出现最多的心情，并列的话取最近一条 -->
-        SUBSTRING_INDEX(
-        GROUP_CONCAT(emotion_type ORDER BY created_at DESC),
-        ',', 1
-        ) AS main_mood
-        FROM diary
-        WHERE user_id = #{userId}
-        AND is_deleted = 0
-        AND DATE(created_at) BETWEEN #{start} AND #{end}
-        GROUP BY DATE(created_at)
-        ORDER BY diary_date ASC
-    </select>
-
-    <!-- ============================================================ -->
-    <!-- 查询热词TopN                                                 -->
-    <!-- 功能：从 diary_keyword 表统计出现最多的关键词                  -->
-    <!-- 用途：词云、标签云                                            -->
-    <!-- ============================================================ -->
-    <select id="selectTopKeywords" resultType="string">
-        SELECT keyword
-        FROM diary_keyword
-        WHERE user_id = #{userId}
-          AND DATE(created_at) BETWEEN #{start} AND #{end}
-        GROUP BY keyword
-        ORDER BY COUNT(*) DESC
-            LIMIT #{limit}
     </select>
 </mapper>
