@@ -43,4 +43,5 @@ public class Diary {
 
     private LocalDateTime updatedAt;
 
+    private Integer isDeleted;
 }
