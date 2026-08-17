@@ -1,19 +1,19 @@
 package com.sixth.soul_trail.service;
 
-import com.sixth.soul_trail.pojo.Diary;
-import java.util.List;
+import com.sixth.soul_trail.VO.DiaryCreateRequestVO;
+import com.sixth.soul_trail.VO.DiaryUpdateRequestVO;
+import com.sixth.soul_trail.VO.DiaryVO;
+import com.sixth.soul_trail.VO.DiaryPageVO;
 
 public interface DiaryService {
 
-    Diary create(Long userId, String title, String content);
+    DiaryVO create(Long userId, DiaryCreateRequestVO request);
 
-    List<Diary> list(Long userId, int page, int pageSize);
+    DiaryPageVO list(Long userId, int page, int pageSize);
 
-    long count(Long userId);
+    DiaryVO getById(Long userId, Long diaryId);
 
-    Diary getById(Long userId, Long diaryId);
-
-    Diary update(Long userId, Long diaryId, String title, String content);
+    DiaryVO update(Long userId, Long diaryId, DiaryUpdateRequestVO request);
 
     void delete(Long userId, Long diaryId);
 }

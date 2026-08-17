@@ -1,12 +1,18 @@
-package com.sixth.soul_trail.service.Impl;
+package com.sixth.soul_trail.service.impl;
 
+import com.sixth.soul_trail.VO.DiaryCreateRequestVO;
+import com.sixth.soul_trail.VO.DiaryUpdateRequestVO;
+import com.sixth.soul_trail.VO.DiaryVO;
+import com.sixth.soul_trail.VO.DiaryPageVO;
 import com.sixth.soul_trail.exception.BusinessException;
 import com.sixth.soul_trail.mapper.DiaryMapper;
 import com.sixth.soul_trail.pojo.Diary;
 import com.sixth.soul_trail.service.DiaryService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -16,45 +22,55 @@ public class DiaryServiceImpl implements DiaryService {
     private DiaryMapper diaryMapper;
 
     @Override
-    public Diary create(Long userId, String title, String content) {
+    public DiaryVO create(Long userId, DiaryCreateRequestVO request) {
         Diary diary = new Diary();
         diary.setUserId(userId);
-        diary.setTitle(title != null ? title : "");
-        diary.setContent(content);
+        diary.setTitle(request.getTitle() != null ? request.getTitle() : "");
+        diary.setContent(request.getContent());
         diaryMapper.insert(diary);
-        return diary;
+
+        return convertToVO(diary);
     }
 
     @Override
-    public List<Diary> list(Long userId, int page, int pageSize) {
+    public DiaryPageVO list(Long userId, int page, int pageSize) {
         int offset = (page - 1) * pageSize;
-        return diaryMapper.selectPageByUserId(userId, offset, pageSize);
+        List<Diary> diaryList = diaryMapper.selectPageByUserId(userId, offset, pageSize);
+        long total = diaryMapper.countByUserId(userId);
+
+        List<DiaryVO> records = new ArrayList<>();
+        for (Diary diary : diaryList) {
+            records.add(convertToVO(diary));
+        }
+
+        DiaryPageVO pageVO = new DiaryPageVO();
+        pageVO.setRecords(records);
+        pageVO.setTotal(total);
+        pageVO.setPage(page);
+        pageVO.setPageSize(pageSize);
+        return pageVO;
     }
 
     @Override
-    public long count(Long userId) {
-        return diaryMapper.countByUserId(userId);
-    }
-
-    @Override
-    public Diary getById(Long userId, Long diaryId) {
+    public DiaryVO getById(Long userId, Long diaryId) {
         Diary diary = diaryMapper.selectByIdAndUserId(diaryId, userId);
         if (diary == null) {
             throw new BusinessException(404, "日记不存在");
         }
-        return diary;
+        return convertToVO(diary);
     }
 
     @Override
-    public Diary update(Long userId, Long diaryId, String title, String content) {
+    public DiaryVO update(Long userId, Long diaryId, DiaryUpdateRequestVO request) {
         Diary diary = diaryMapper.selectByIdAndUserId(diaryId, userId);
         if (diary == null) {
             throw new BusinessException(404, "日记不存在");
         }
-        diary.setTitle(title != null ? title : "");
-        diary.setContent(content);
+        diary.setTitle(request.getTitle() != null ? request.getTitle() : "");
+        diary.setContent(request.getContent());
         diaryMapper.update(diary);
-        return diary;
+
+        return convertToVO(diary);
     }
 
     @Override
@@ -63,5 +79,14 @@ public class DiaryServiceImpl implements DiaryService {
         if (rows == 0) {
             throw new BusinessException(404, "日记不存在");
         }
+    }
+
+    /**
+     * 实体类转 VO，避免把 UserId、isDeleted 等内部字段暴露给前端
+     */
+    private DiaryVO convertToVO(Diary diary) {
+        DiaryVO vo = new DiaryVO();
+        BeanUtils.copyProperties(diary, vo);
+        return vo;
     }
 }
