@@ -1,15 +1,15 @@
 package com.sixth.soul_trail.controller;
 
+import com.sixth.soul_trail.VO.DiaryCreateRequestVO;
+import com.sixth.soul_trail.VO.DiaryUpdateRequestVO;
+import com.sixth.soul_trail.VO.DiaryVO;
+import com.sixth.soul_trail.VO.DiaryPageVO;
 import com.sixth.soul_trail.common.Result;
 import com.sixth.soul_trail.pojo.Summary;
 import com.sixth.soul_trail.service.DiaryService;
 import com.sixth.soul_trail.utils.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/diaries")
@@ -23,15 +23,15 @@ public class DiaryController {
      * 请求体：{ "title": "xxx", "content": "xxx" }
      */
     @PostMapping
+    public Result<DiaryVO> create(@RequestBody DiaryCreateRequestVO request) {
     public Result<Summary> create(@RequestBody Map<String, String> body) {
         Long userId = SecurityUtil.getCurrentUserId();
-        String title = body.get("title");
-        String content = body.get("content");
 
-        if (content == null || content.trim().isEmpty()) {
+        if (request.getContent() == null || request.getContent().trim().isEmpty()) {
             return Result.error(400, "日记内容不能为空");
         }
 
+        DiaryVO diary = diaryService.create(userId, request);
         Summary diary = diaryService.create(userId, title, content);
         return Result.success(diary);
     }
@@ -40,9 +40,11 @@ public class DiaryController {
      * GET /api/diaries?page=1&pageSize=10
      */
     @GetMapping
-    public Result<Map<String, Object>> list(@RequestParam(defaultValue = "1") int page,
-                                            @RequestParam(defaultValue = "10") int pageSize) {
+    public Result<DiaryPageVO> list(@RequestParam(defaultValue = "1") int page,
+                                    @RequestParam(defaultValue = "10") int pageSize) {
         Long userId = SecurityUtil.getCurrentUserId();
+        DiaryPageVO pageVO = diaryService.list(userId, page, pageSize);
+        return Result.success(pageVO);
         List<Summary> records = diaryService.list(userId, page, pageSize);
         long total = diaryService.count(userId);
 
@@ -59,6 +61,9 @@ public class DiaryController {
      * GET /api/diaries/{id}
      */
     @GetMapping("/{id}")
+    public Result<DiaryVO> getById(@PathVariable("id") Long diaryId) {
+        Long userId = SecurityUtil.getCurrentUserId();
+        DiaryVO diary = diaryService.getById(userId, diaryId);
     public Result<Summary> getById(@PathVariable("id") Long diaryId) {
         Long userId = SecurityUtil.getCurrentUserId();
         Summary diary = diaryService.getById(userId, diaryId);
@@ -70,16 +75,17 @@ public class DiaryController {
      * 请求体：{ "title": "xxx", "content": "xxx" }
      */
     @PutMapping("/{id}")
+    public Result<DiaryVO> update(@PathVariable("id") Long diaryId,
+                                  @RequestBody DiaryUpdateRequestVO request) {
     public Result<Summary> update(@PathVariable("id") Long diaryId,
                                   @RequestBody Map<String, String> body) {
         Long userId = SecurityUtil.getCurrentUserId();
-        String title = body.get("title");
-        String content = body.get("content");
 
-        if (content == null || content.trim().isEmpty()) {
+        if (request.getContent() == null || request.getContent().trim().isEmpty()) {
             return Result.error(400, "日记内容不能为空");
         }
 
+        DiaryVO diary = diaryService.update(userId, diaryId, request);
         Summary diary = diaryService.update(userId, diaryId, title, content);
         return Result.success(diary);
     }

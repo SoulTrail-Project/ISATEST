@@ -1,5 +1,15 @@
 package com.sixth.soul_trail.service;
 
+import com.sixth.soul_trail.VO.DiaryCreateRequestVO;
+import com.sixth.soul_trail.VO.DiaryUpdateRequestVO;
+import com.sixth.soul_trail.VO.DiaryVO;
+import com.sixth.soul_trail.VO.DiaryPageVO;
+
+public interface DiaryService {
+
+    DiaryVO create(Long userId, DiaryCreateRequestVO request);
+
+    DiaryPageVO list(Long userId, int page, int pageSize);
 import com.sixth.soul_trail.pojo.Summary;
 import com.sixth.soul_trail.VO.EmotionDistributionVO;
 import com.sixth.soul_trail.VO.WordCloudVO;
@@ -12,8 +22,9 @@ public interface DiaryService {
 
     List<Summary> list(Long userId, int page, int pageSize);
 
-    long count(Long userId);
+    DiaryVO getById(Long userId, Long diaryId);
 
+    DiaryVO update(Long userId, Long diaryId, DiaryUpdateRequestVO request);
     Summary getById(Long userId, Long diaryId);
 
     Summary update(Long userId, Long diaryId, String title, String content);
