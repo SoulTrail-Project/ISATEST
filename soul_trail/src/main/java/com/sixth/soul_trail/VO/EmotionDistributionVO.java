@@ -1,6 +1,5 @@
 package com.sixth.soul_trail.VO;
 
-import com.sixth.soul_trail.service.DiaryService;
 import lombok.Data;
 
 @Data
