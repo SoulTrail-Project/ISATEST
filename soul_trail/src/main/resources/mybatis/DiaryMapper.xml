@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-                "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sixth.soul_trail.mapper.DiaryMapper">
 
-    <resultMap id="DiaryResultMap" type="com.sixth.soul_trail.VO.Summary">
+    <!-- [统一] 原 type 指向缺失的 VO.Summary，现改回 pojo.Diary（与 DiaryMapper 接口签名一致）；Diary 已补 isDeleted 字段 -->
+    <resultMap id="DiaryResultMap" type="com.sixth.soul_trail.pojo.Diary">
         <id property="id" column="id"/>
         <result property="userId" column="user_id"/>
         <result property="title" column="title"/>
@@ -13,7 +14,8 @@
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
-    <insert id="insert" parameterType="com.sixth.soul_trail.VO.Summary" useGeneratedKeys="true" keyProperty="id">
+    <!-- [统一] parameterType 由 VO.Summary 改为 pojo.Diary -->
+    <insert id="insert" parameterType="com.sixth.soul_trail.pojo.Diary" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO diary (user_id, title, content)
         VALUES (#{userId}, #{title}, #{content})
     </insert>
@@ -34,7 +36,8 @@
         SELECT * FROM diary WHERE id = #{id} AND user_id = #{userId} AND is_deleted = 0
     </select>
 
-    <update id="update" parameterType="com.sixth.soul_trail.VO.Summary">
+    <!-- [统一] parameterType 由 VO.Summary 改为 pojo.Diary -->
+    <update id="update" parameterType="com.sixth.soul_trail.pojo.Diary">
         UPDATE diary SET title = #{title}, content = #{content}
         WHERE id = #{id} AND user_id = #{userId} AND is_deleted = 0
     </update>
@@ -43,25 +46,22 @@
         UPDATE diary SET is_deleted = 1 WHERE id = #{id} AND user_id = #{userId}
     </update>
 
-<!--    接口10 情绪分布（饼图）-->
+    <!-- 接口10 情绪分布（饼图）-->
     <select id="countByEmotionType" resultType="java.util.Map">
         SELECT mood_type AS moodType, count(*) AS value
         FROM diary
-        WHERE user_id = #{userId} # AND is_deleted =0
+        WHERE user_id = #{userId} AND is_deleted = 0   <!-- [修改] 原为 "# AND is_deleted =0"（被注释），已恢复 -->
         GROUP BY mood_type
-    <!-- ============================================================ -->
-    <!-- 按天聚合统计日记数据                                           -->
-    <!-- 功能：统计每天有几条日记、平均分多少、出现最多的心情是什么        -->
-    <!-- 性能：一条SQL搞定，比把所有数据拉到Java里算快很多               -->
-    <!-- ============================================================ -->
+    </select>   <!-- [修改] 原缺失 </select> 闭合标签（合并冲突残留），已补上 -->
+
+    <!-- 按天聚合统计日记数据 -->
     <select id="selectDailyStats" resultType="java.util.Map">
         SELECT
         DATE(created_at) AS diary_date,
         COUNT(*) AS diary_count,
-        ROUND(AVG(emotion_score), 2) AS avg_score,
-        <!-- 取出现最多的心情，并列的话取最近一条 -->
+        ROUND(AVG(sentiment_score), 2) AS avg_score,   <!-- [修改] 原为 AVG(emotion_score)，真实列 sentiment_score -->
         SUBSTRING_INDEX(
-        GROUP_CONCAT(emotion_type ORDER BY created_at DESC),
+        GROUP_CONCAT(mood_type ORDER BY created_at DESC),   <!-- [修改] 原为 emotion_type，真实列 mood_type -->
         ',', 1
         ) AS main_mood
         FROM diary
@@ -72,18 +72,16 @@
         ORDER BY diary_date ASC
     </select>
 
-    <!-- ============================================================ -->
-    <!-- 查询热词TopN                                                 -->
-    <!-- 功能：从 diary_keyword 表统计出现最多的关键词                  -->
-    <!-- 用途：词云、标签云                                            -->
-    <!-- ============================================================ -->
+    <!-- 查询热词TopN -->
     <select id="selectTopKeywords" resultType="string">
-        SELECT keyword
-        FROM diary_keyword
-        WHERE user_id = #{userId}
-          AND DATE(created_at) BETWEEN #{start} AND #{end}
-        GROUP BY keyword
+        SELECT dk.word   <!-- [修改] 原为 keyword（diary_keyword 无此列），真实列 word -->
+        FROM diary_keyword dk
+        JOIN diary d ON dk.diary_id = d.id   <!-- [修改] 原未 JOIN，无法按用户/时间筛选 -->
+        WHERE d.user_id = #{userId}   <!-- [修改] 原为 diary_keyword.user_id（不存在），改 d.user_id -->
+        AND d.is_deleted = 0   <!-- [修改] 补逻辑删除过滤 -->
+        AND DATE(d.created_at) BETWEEN #{start} AND #{end}   <!-- [修改] 原为 diary_keyword.created_at（不存在），改 d.created_at -->
+        GROUP BY dk.word
         ORDER BY COUNT(*) DESC
-            LIMIT #{limit}
+        LIMIT #{limit}
     </select>
 </mapper>
