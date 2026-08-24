@@ -5,7 +5,6 @@ import com.sixth.soul_trail.VO.DiaryUpdateRequestVO;
 import com.sixth.soul_trail.VO.DiaryVO;
 import com.sixth.soul_trail.VO.DiaryPageVO;
 import com.sixth.soul_trail.common.Result;
-import com.sixth.soul_trail.pojo.Summary;
 import com.sixth.soul_trail.service.DiaryService;
 import com.sixth.soul_trail.utils.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,6 @@ public class DiaryController {
      */
     @PostMapping
     public Result<DiaryVO> create(@RequestBody DiaryCreateRequestVO request) {
-    public Result<Summary> create(@RequestBody Map<String, String> body) {
         Long userId = SecurityUtil.getCurrentUserId();
 
         if (request.getContent() == null || request.getContent().trim().isEmpty()) {
@@ -32,7 +30,6 @@ public class DiaryController {
         }
 
         DiaryVO diary = diaryService.create(userId, request);
-        Summary diary = diaryService.create(userId, title, content);
         return Result.success(diary);
     }
 
@@ -45,16 +42,6 @@ public class DiaryController {
         Long userId = SecurityUtil.getCurrentUserId();
         DiaryPageVO pageVO = diaryService.list(userId, page, pageSize);
         return Result.success(pageVO);
-        List<Summary> records = diaryService.list(userId, page, pageSize);
-        long total = diaryService.count(userId);
-
-        Map<String, Object> data = new HashMap<>();
-        data.put("records", records);
-        data.put("total", total);
-        data.put("page", page);
-        data.put("pageSize", pageSize);
-
-        return Result.success(data);
     }
 
     /**
@@ -64,9 +51,6 @@ public class DiaryController {
     public Result<DiaryVO> getById(@PathVariable("id") Long diaryId) {
         Long userId = SecurityUtil.getCurrentUserId();
         DiaryVO diary = diaryService.getById(userId, diaryId);
-    public Result<Summary> getById(@PathVariable("id") Long diaryId) {
-        Long userId = SecurityUtil.getCurrentUserId();
-        Summary diary = diaryService.getById(userId, diaryId);
         return Result.success(diary);
     }
 
@@ -77,8 +61,6 @@ public class DiaryController {
     @PutMapping("/{id}")
     public Result<DiaryVO> update(@PathVariable("id") Long diaryId,
                                   @RequestBody DiaryUpdateRequestVO request) {
-    public Result<Summary> update(@PathVariable("id") Long diaryId,
-                                  @RequestBody Map<String, String> body) {
         Long userId = SecurityUtil.getCurrentUserId();
 
         if (request.getContent() == null || request.getContent().trim().isEmpty()) {
@@ -86,7 +68,6 @@ public class DiaryController {
         }
 
         DiaryVO diary = diaryService.update(userId, diaryId, request);
-        Summary diary = diaryService.update(userId, diaryId, title, content);
         return Result.success(diary);
     }
 
@@ -99,5 +80,4 @@ public class DiaryController {
         diaryService.delete(userId, diaryId);
         return Result.success(null);
     }
-
 }

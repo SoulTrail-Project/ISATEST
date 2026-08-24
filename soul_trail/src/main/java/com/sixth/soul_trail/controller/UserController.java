@@ -27,8 +27,8 @@ public class UserController {
     private UserMapper userMapper;
 
     /*
-    * 用户注册接口
-    * */
+     * 用户注册接口
+     * */
     @PostMapping("/register")
     public Result register(@RequestBody User user) {
         // 校验用户表单是否为空，为空打回
@@ -40,7 +40,7 @@ public class UserController {
         return success ? Result.success("注册成功，请登录") : Result.error(400,"用户名已存在");
     }
     /*
-    * 用户登录接口
+     * 用户登录接口
      */
     @PostMapping("/login")
     public Result login(@RequestBody User loginUser) {
