@@ -12,4 +12,6 @@ public interface UserMapper {
     // 数据库中查找用户
     User selectByUsername(String username);
 
+    User selectById(Long id);
+
 }

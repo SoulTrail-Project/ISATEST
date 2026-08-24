@@ -15,6 +15,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,8 +49,10 @@ public class DiaryServiceImpl implements DiaryService {
         diary.setUserId(userId);
         diary.setTitle(request.getTitle() != null ? request.getTitle() : "");
         diary.setContent(request.getContent());
+        diary.setMoodType(request.getMoodType());
+        diary.setSentimentEmotion(request.getSentimentEmotion());
+        diary.setDiaryDate(LocalDate.now());
         diaryMapper.insert(diary);
-
         return convertToVO(diary);
     }
 

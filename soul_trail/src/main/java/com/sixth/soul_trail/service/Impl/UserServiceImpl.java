@@ -3,10 +3,12 @@ package com.sixth.soul_trail.service.Impl;
 import com.sixth.soul_trail.mapper.UserMapper;
 import com.sixth.soul_trail.pojo.User;
 import com.sixth.soul_trail.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService{
 

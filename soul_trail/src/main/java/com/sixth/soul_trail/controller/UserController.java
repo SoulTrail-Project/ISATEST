@@ -2,11 +2,13 @@ package com.sixth.soul_trail.controller;
 
 import com.sixth.soul_trail.VO.LoginVO;
 import com.sixth.soul_trail.VO.UserInfoVO;
+import com.sixth.soul_trail.mapper.UserMapper;
 import com.sixth.soul_trail.pojo.User;
 import com.sixth.soul_trail.service.UserService;
 import com.sixth.soul_trail.common.Result;
 import com.sixth.soul_trail.utils.JwtUtil;
-import jakarta.validation.constraints.Pattern;
+import com.sixth.soul_trail.utils.SecurityUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,16 +16,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
+@Slf4j
 @RestController
 @RequestMapping("/user")
 public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserMapper userMapper;
 
     /*
     * 用户注册接口
@@ -43,6 +44,10 @@ public class UserController {
      */
     @PostMapping("/login")
     public Result login(@RequestBody User loginUser) {
+        Long userId = SecurityUtil.getCurrentUserId();
+        log.info("当前登录userId:{}",userId);
+// 如果你这里要查用户，用 selectById
+        User user = userMapper.selectById(userId);
         //判断用户是否存在
         User dbUser = userService.findByUserName(loginUser.getUsername());
         if  (dbUser == null) {
@@ -53,7 +58,8 @@ public class UserController {
         if(!passwordEncoder.matches(loginUser.getPassword(), dbUser.getPassword())) {
             return Result.error(400,"密码错误");
         }
-        String token = JwtUtil.genToken(loginUser.getId());
+
+        String token = JwtUtil.genToken(dbUser.getId());
         //用户信息
         UserInfoVO info = new UserInfoVO();
         info.setId(dbUser.getId());
@@ -65,7 +71,7 @@ public class UserController {
         LoginVO vo = new LoginVO();
         vo.setToken(token);
         vo.setExpiresIn(JwtUtil.EXPIRE_SECONDS);
-        vo.setUserInfo(info);//
+        vo.setUserInfo(info);
         return new Result<>(200,"登录成功",vo);
     }
 
