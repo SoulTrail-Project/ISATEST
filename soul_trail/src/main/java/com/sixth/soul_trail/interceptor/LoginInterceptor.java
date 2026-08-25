@@ -23,8 +23,8 @@ public class LoginInterceptor implements HandlerInterceptor {
         Long userId = JwtUtil.parseToken(token);
         System.out.println("拦截器解析出来userId：" + userId);
         if (userId == null) {
-            response.setStatus(401);
             response.getWriter().write("token 无效或已过期");
+            response.setStatus(401);
             return false;
         }
         request.setAttribute("userId", userId);

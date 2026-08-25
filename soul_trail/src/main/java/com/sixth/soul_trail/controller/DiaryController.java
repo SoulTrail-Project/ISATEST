@@ -24,7 +24,7 @@ public class DiaryController {
     @PostMapping
     public Result<DiaryVO> create(@RequestBody DiaryCreateRequestVO request) {
         Long userId = SecurityUtil.getCurrentUserId();
-
+        System.out.println("测试Controller能否拿到userId:" + userId);
         if (request.getContent() == null || request.getContent().trim().isEmpty()) {
             return Result.error(400, "日记内容不能为空");
         }
@@ -80,4 +80,5 @@ public class DiaryController {
         diaryService.delete(userId, diaryId);
         return Result.success(null);
     }
+
 }

@@ -16,8 +16,8 @@
 
     <!-- [统一] parameterType 由 VO.Summary 改为 pojo.Diary -->
     <insert id="insert" parameterType="com.sixth.soul_trail.pojo.Diary" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO diary (user_id, title, content)
-        VALUES (#{userId}, #{title}, #{content})
+        insert into diary (user_id, title, content, mood_type, sentiment_emotion, diary_date)
+        values (#{userId}, #{title}, #{content}, #{moodType}, #{sentimentEmotion}, #{diaryDate})
     </insert>
 
     <select id="selectPageByUserId" resultMap="DiaryResultMap">
