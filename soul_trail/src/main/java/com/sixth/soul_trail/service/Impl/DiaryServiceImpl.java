@@ -16,7 +16,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,10 +35,8 @@ public class DiaryServiceImpl implements DiaryService {
         diary.setUserId(userId);
         diary.setTitle(request.getTitle() != null ? request.getTitle() : "");
         diary.setContent(request.getContent());
-        diary.setMoodType(request.getMoodType());
-        diary.setSentimentEmotion(request.getSentimentEmotion());
-        diary.setDiaryDate(LocalDate.now());
         diaryMapper.insert(diary);
+
         return convertToVO(diary);
     }
 
@@ -66,7 +63,7 @@ public class DiaryServiceImpl implements DiaryService {
     public DiaryVO getById(Long userId, Long diaryId) {
         Diary diary = diaryMapper.selectByIdAndUserId(diaryId, userId);
         if (diary == null) {
-            throw new BusinessException(404, "鏃ヨ?颁笉瀛樺??");
+            throw new BusinessException(404, "日记不存在");
         }
         return convertToVO(diary);
     }
@@ -75,7 +72,7 @@ public class DiaryServiceImpl implements DiaryService {
     public DiaryVO update(Long userId, Long diaryId, DiaryUpdateRequestVO request) {
         Diary diary = diaryMapper.selectByIdAndUserId(diaryId, userId);
         if (diary == null) {
-            throw new BusinessException(404, "鏃ヨ?颁笉瀛樺??");
+            throw new BusinessException(404, "日记不存在");
         }
         diary.setTitle(request.getTitle() != null ? request.getTitle() : "");
         diary.setContent(request.getContent());
@@ -88,17 +85,8 @@ public class DiaryServiceImpl implements DiaryService {
     public void delete(Long userId, Long diaryId) {
         int rows = diaryMapper.softDeleteById(diaryId, userId);
         if (rows == 0) {
-            throw new BusinessException(404, "鏃ヨ?颁笉瀛樺??");
+            throw new BusinessException(404, "日记不存在");
         }
-    }
-
-    /**
-     * 瀹炰綋绫昏浆 VO锛岄伩鍏嶆妸 UserId銆乮sDeleted 绛夊唴閮ㄥ瓧娈垫毚闇茬粰鍓嶇??
-     */
-    private DiaryVO convertToVO(Diary diary) {
-        DiaryVO vo = new DiaryVO();
-        BeanUtils.copyProperties(diary, vo);
-        return vo;
     }
 
     @Override
@@ -121,5 +109,14 @@ public class DiaryServiceImpl implements DiaryService {
     @Override
     public List<WordCloudVO> wordCloud(Long userId) {
         return diaryKeywordMapper.selectWordCloud(userId);
+    }
+
+    /**
+     * 实体类转 VO，避免把 UserId、isDeleted 等内部字段暴露给前端
+     */
+    private DiaryVO convertToVO(Diary diary) {
+        DiaryVO vo = new DiaryVO();
+        BeanUtils.copyProperties(diary, vo);
+        return vo;
     }
 }
