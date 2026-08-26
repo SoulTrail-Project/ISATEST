@@ -1,0 +1,21 @@
+# IDE配置
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Maven编译输出
+target/
+build/
+out/
+
+# 系统垃圾文件
+.DS_Store
+Thumbs.db
+
+# 日志、临时文件
+*.log
+*.tmp
+
+# idea http测试脚本
+*.http

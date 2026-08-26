@@ -1,6 +1,14 @@
 server:
+  servlet:
+    encoding:
+      force-request: true
+      force-response: true
+      charset: UTF-8
+      enabled: true
+  tomcat:
+    uri-encoding: UTF-8
+    # 解决中文乱码出现?? 的问题
   port: 8080
-
 spring:
   application:
     name: soul-trail
@@ -16,7 +24,7 @@ spring:
       minimum-idle: 2
       connection-timeout: 30000
 
-mybatis:
+mybatis-plus:
   mapper-locations: classpath:mybatis/*.xml
   type-aliases-package: com.sixth.soul_trail.pojo
   configuration:

@@ -2,9 +2,12 @@ package com.sixth.soul_trail.controller;
 
 import com.sixth.soul_trail.VO.DiaryStatisticsData;
 import com.sixth.soul_trail.VO.TrendVo;
+import com.sixth.soul_trail.VO.EmotionDistributionVO;
+import com.sixth.soul_trail.VO.WordCloudVO;
 import com.sixth.soul_trail.common.Result;
 import com.sixth.soul_trail.service.StatsService;
 import com.sixth.soul_trail.utils.JwtUtil;
+import com.sixth.soul_trail.utils.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,6 +65,28 @@ public class StatsController {
         List<TrendVo> data = statsService.getTrendStats(userId, range);
         return Result.success(data);
 
+    }
+
+    // interface_10
+    @GetMapping("/emotion-distribution")
+    public Result<List<EmotionDistributionVO>> getEmotionDistribution() {
+        Long userId = SecurityUtil.getCurrentUserId();
+        if (userId == null) {
+            return new Result<>(401, "未登录或Token已过期", null);
+        }
+        List<EmotionDistributionVO> data = statsService.getEmotionDistribution(userId);
+        return Result.success(data);
+    }
+
+    // interface_11
+    @GetMapping("/word-cloud")
+    public Result<List<WordCloudVO>> getWordCloud() {
+        Long userId = SecurityUtil.getCurrentUserId();
+        if (userId == null) {
+            return new Result<>(401, "未登录或Token已过期", null);
+        }
+        List<WordCloudVO> data = statsService.getWordCloud(userId);
+        return Result.success(data);
     }
 
 }

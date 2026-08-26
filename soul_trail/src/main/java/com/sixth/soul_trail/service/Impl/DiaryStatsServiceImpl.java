@@ -33,7 +33,7 @@ public class DiaryStatsServiceImpl implements DiaryStatsService {
         // 1. 从token里拿当前登录用户的ID
         Long userId = SecurityUtil.getCurrentUserId();
         if (userId == null) {
-            throw new BusinessException(401,"请先登录");
+            userId = 1L;  // 临时：开发环境默认用 test01 的用户 id
         }
 
         // 2. 计算这个月的第一天和最后一天
@@ -101,7 +101,7 @@ public class DiaryStatsServiceImpl implements DiaryStatsService {
         // 1. 拿用户ID
         Long userId = SecurityUtil.getCurrentUserId();
         if (userId == null) {
-            throw new BusinessException(401,"请先登录");
+            userId = 1L;  // 临时：开发环境默认用 test01 的用户 id
         }
 
         // 2. 解析月份字符串，比如 "2025-08"

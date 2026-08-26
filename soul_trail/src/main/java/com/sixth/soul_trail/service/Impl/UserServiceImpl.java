@@ -1,15 +1,17 @@
 package com.sixth.soul_trail.service.Impl;
 
+import com.sixth.soul_trail.exception.BusinessException;
 import com.sixth.soul_trail.mapper.UserMapper;
 import com.sixth.soul_trail.pojo.User;
 import com.sixth.soul_trail.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService{
-
     /*
     * @param user 用户表单
     * @return true/false
@@ -46,5 +48,32 @@ public class UserServiceImpl implements UserService{
     return existUser;
     }
 
+    @Override
+    public void updatePassword(Long userId, String oldPassword, String newPassword) {
+        //查询当前用户
+        User dbUser = userMapper.selectById(userId);
+        if(dbUser == null){
+            throw new BusinessException(404,"用户不存在");
+        }
+        //2.验旧密码:matches(明文，哈希)
+        if(!passwordEncoder.matches(oldPassword,dbUser.getPassword())){
+            throw new BusinessException(400,"原密码错误");
+        }
+        //3.更新代码
+        userMapper.updatePassword(userId,passwordEncoder.encode(newPassword));
+
+
+    }
+    //更改昵称
+    @Override
+    public void updateNickname(Long userId, String nickname) {
+        userMapper.updateNickname(userId,nickname);
+    }
+
+    //更改头像
+    @Override
+    public void updateAvatar(Long currentUserId, String avatarUrl) {
+        userMapper.updateAvatar(currentUserId,avatarUrl);
+    }
 
 }

@@ -18,6 +18,8 @@ public class Diary {
 
     private Long userId;
 
+    private String title;
+
     private String content;
 
     private String moodType;
@@ -41,4 +43,5 @@ public class Diary {
 
     private LocalDateTime updatedAt;
 
+    private Integer isDeleted;
 }
