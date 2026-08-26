@@ -6,4 +6,5 @@ import lombok.Data;
 public class DiaryUpdateRequestVO {
     private String title;
     private String content;
+    private String moodType;
 }

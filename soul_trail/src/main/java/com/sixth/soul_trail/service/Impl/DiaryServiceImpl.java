@@ -4,11 +4,7 @@ import com.sixth.soul_trail.VO.DiaryCreateRequestVO;
 import com.sixth.soul_trail.VO.DiaryUpdateRequestVO;
 import com.sixth.soul_trail.VO.DiaryVO;
 import com.sixth.soul_trail.VO.DiaryPageVO;
-import com.sixth.soul_trail.VO.EmotionDistributionVO;
-import com.sixth.soul_trail.VO.WordCloudVO;
-import com.sixth.soul_trail.common.MoodTypeEnum;
 import com.sixth.soul_trail.exception.BusinessException;
-import com.sixth.soul_trail.mapper.DiaryKeywordMapper;
 import com.sixth.soul_trail.mapper.DiaryMapper;
 import com.sixth.soul_trail.pojo.Diary;
 import com.sixth.soul_trail.service.DiaryService;
@@ -16,9 +12,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class DiaryServiceImpl implements DiaryService {
@@ -26,15 +22,16 @@ public class DiaryServiceImpl implements DiaryService {
     @Autowired
     private DiaryMapper diaryMapper;
 
-    @Autowired
-    private DiaryKeywordMapper diaryKeywordMapper;
-
     @Override
     public DiaryVO create(Long userId, DiaryCreateRequestVO request) {
         Diary diary = new Diary();
         diary.setUserId(userId);
         diary.setTitle(request.getTitle() != null ? request.getTitle() : "");
         diary.setContent(request.getContent());
+        //新添加moodType
+        diary.setMoodType(request.getMoodType());
+        //补充 diaryDate，避免数据库 NOT NULL 约束报错
+        diary.setDiaryDate(LocalDate.now());
         diaryMapper.insert(diary);
 
         return convertToVO(diary);
@@ -76,6 +73,8 @@ public class DiaryServiceImpl implements DiaryService {
         }
         diary.setTitle(request.getTitle() != null ? request.getTitle() : "");
         diary.setContent(request.getContent());
+        //新增MoodType
+        diary.setMoodType(request.getMoodType());
         diaryMapper.update(diary);
 
         return convertToVO(diary);
@@ -87,28 +86,6 @@ public class DiaryServiceImpl implements DiaryService {
         if (rows == 0) {
             throw new BusinessException(404, "日记不存在");
         }
-    }
-
-    @Override
-    public List<EmotionDistributionVO> emotionDistribution(Long userId) {
-        List<Map<String, Object>> rows = diaryMapper.countByEmotionType(userId);
-        List<EmotionDistributionVO> result = new ArrayList<>();
-        for (Map<String, Object> row : rows) {
-            EmotionDistributionVO vo = new EmotionDistributionVO();
-            String moodType = (String) row.get("moodType");
-            MoodTypeEnum mood = MoodTypeEnum.getByCode(moodType);
-            vo.setMoodType(moodType);
-            vo.setName(mood != null ? mood.getName() : moodType);
-            vo.setColor(mood != null ? mood.getThemeColor() : "#999999");
-            vo.setValue(((Number) row.get("value")).longValue());
-            result.add(vo);
-        }
-        return result;
-    }
-
-    @Override
-    public List<WordCloudVO> wordCloud(Long userId) {
-        return diaryKeywordMapper.selectWordCloud(userId);
     }
 
     /**

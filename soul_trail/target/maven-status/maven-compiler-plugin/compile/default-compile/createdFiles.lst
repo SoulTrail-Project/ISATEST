@@ -7,6 +7,7 @@ com\sixth\soul_trail\common\MoodTypeEnum.class
 com\sixth\soul_trail\service\UserService.class
 com\sixth\soul_trail\VO\CalendarDayVO.class
 com\sixth\soul_trail\VO\MonthlyStatsVO.class
+com\sixth\soul_trail\exception\GlobalExceptionHandler.class
 com\sixth\soul_trail\service\Impl\DiaryServiceImpl.class
 com\sixth\soul_trail\service\StatsService.class
 com\sixth\soul_trail\utils\SecurityUtil.class
@@ -37,7 +38,6 @@ com\sixth\soul_trail\config\WebConfig.class
 com\sixth\soul_trail\service\Impl\StatsServiceImpl.class
 com\sixth\soul_trail\VO\DiaryCreateRequestVO.class
 com\sixth\soul_trail\interceptor\LoginInterceptor.class
-com\sixth\soul_trail\controller\emotionDistributionController.class
 com\sixth\soul_trail\VO\TrendVo.class
 com\sixth\soul_trail\pojo\User.class
 com\sixth\soul_trail\VO\HeatmapDayVO.class

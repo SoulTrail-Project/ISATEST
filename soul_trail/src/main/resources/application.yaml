@@ -1,6 +1,14 @@
 server:
+  servlet:
+    encoding:
+      force-request: true
+      force-response: true
+      charset: UTF-8
+      enabled: true
+  tomcat:
+    uri-encoding: UTF-8
+    # 解决中文乱码?? 的问题
   port: 8080
-
 spring:
   application:
     name: soul-trail

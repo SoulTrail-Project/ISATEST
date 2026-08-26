@@ -4,8 +4,6 @@ import com.sixth.soul_trail.VO.DiaryCreateRequestVO;
 import com.sixth.soul_trail.VO.DiaryUpdateRequestVO;
 import com.sixth.soul_trail.VO.DiaryVO;
 import com.sixth.soul_trail.VO.DiaryPageVO;
-import com.sixth.soul_trail.VO.EmotionDistributionVO;
-import com.sixth.soul_trail.VO.WordCloudVO;
 
 import java.util.List;
 
@@ -20,8 +18,4 @@ public interface DiaryService {
     DiaryVO update(Long userId, Long diaryId, DiaryUpdateRequestVO request);
 
     void delete(Long userId, Long diaryId);
-
-    List<EmotionDistributionVO> emotionDistribution(Long userId);
-
-    List<WordCloudVO> wordCloud(Long userId);
 }

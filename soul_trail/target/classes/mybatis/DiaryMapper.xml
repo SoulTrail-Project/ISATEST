@@ -12,6 +12,7 @@
         <result property="isDeleted" column="is_deleted"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
+        <result property="moodType" column="mood_type"/>
     </resultMap>
 
     <!-- [统一] parameterType 由 VO.Summary 改为 pojo.Diary -->
@@ -38,7 +39,7 @@
 
     <!-- [统一] parameterType 由 VO.Summary 改为 pojo.Diary -->
     <update id="update" parameterType="com.sixth.soul_trail.pojo.Diary">
-        UPDATE diary SET title = #{title}, content = #{content}
+        UPDATE diary SET title = #{title}, content = #{content},mood_type=#{moodType}
         WHERE id = #{id} AND user_id = #{userId} AND is_deleted = 0
     </update>
 
