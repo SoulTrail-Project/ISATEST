@@ -7,7 +7,7 @@ server:
       enabled: true
   tomcat:
     uri-encoding: UTF-8
-    # 解决中文乱码?? 的问题
+    # 解决中文乱码出现?? 的问题
   port: 8080
 spring:
   application:

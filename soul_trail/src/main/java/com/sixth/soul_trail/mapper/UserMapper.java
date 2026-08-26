@@ -2,6 +2,7 @@ package com.sixth.soul_trail.mapper;
 
 import com.sixth.soul_trail.pojo.User;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface UserMapper {
@@ -14,4 +15,9 @@ public interface UserMapper {
 
     User selectById(Long id);
 
+    int updatePassword(@Param("id") Long id, @Param("password") String password);
+
+    int updateNickname(@Param("id") Long id, @Param("nickname") String nickname);
+
+    int updateAvatar(@Param("id") Long id, @Param("avatarUrl") String avatarUrl);
 }

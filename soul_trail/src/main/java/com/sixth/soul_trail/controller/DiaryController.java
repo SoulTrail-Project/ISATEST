@@ -19,7 +19,7 @@ public class DiaryController {
 
     /**
      * POST /api/diaries
-     * 请求体：{ "title": "xxx", "content": "xxx" }
+     * 请求体：{ "title": "xxx", "content": "xxx","moodType": "xxx"}
      */
     @PostMapping
     public Result<DiaryVO> create(@RequestBody DiaryCreateRequestVO request) {

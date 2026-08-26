@@ -19,5 +19,16 @@
         insert into user (username,password)
         values (#{username},#{password})
     </insert>
+    <!--修改密码-->
+    <update id="updatePassword">
+        update user set password = #{password},updated_at = now() where id = #{id}
+    </update>
+<!--    修改昵称-->
+    <update id="updateNickname">
+        update user set nickname = #{nickname}, updated_at = now() where id = #{id}
+    </update>
+    <update id="updateAvatar">
+        update user set avatar_url = #{avatarUrl}, updated_at = now() where id = #{id}
+    </update>
 
 </mapper>
