@@ -21,7 +21,7 @@ public class DiaryVO {
 
     private String sentimentEmotion;
 
-    private String sentimentLable;
+    private String sentimentLabel;
 
     private float score;
 

@@ -53,14 +53,14 @@ public class SummaryStatsProcesser {
     public SentTimeRatio getSentTimeRatio(Long userId) {
         QueryWrapper<Diary> wrapper = new QueryWrapper<>();
         wrapper.eq("user_id", userId)
-                .groupBy("sentiment_lable")
-                .select("sentiment_lable", "count(*) as count");
+                .groupBy("sentiment_label")
+                .select("sentiment_label", "count(*) as count");
         List<Map<String, Object>> maps = statsMapper.selectMaps(wrapper);
 
         // 解析结果
         long positive = 0, neutral = 0, negative = 0;
         for (Map<String, Object> map : maps) {
-            String sentiment = (String) map.get("sentiment");
+            String sentiment = (String) map.get("sentiment_label");
             long count = (long) map.get("count");
             if ("positive".equals(sentiment)) positive = count;
             else if ("neutral".equals(sentiment)) neutral = count;
@@ -79,7 +79,7 @@ public class SummaryStatsProcesser {
         // MyBatis-Plus 查询单个值（这里返回平均分，可能为 null）
         QueryWrapper<Diary> wrapper = new QueryWrapper<>();
         wrapper.eq("user_id", userId)
-                .select("score"); // 只查分数
+                .select("sentiment_score"); // 只查情感分数（库列名 sentiment_score）
         List<Double> scores = statsMapper.selectObjs(wrapper)
                 .stream()
                 .map(obj -> (Double) obj)

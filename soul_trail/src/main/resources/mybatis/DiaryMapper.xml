@@ -13,16 +13,23 @@
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
         <result property="moodType" column="mood_type"/>
+        <result property="sentimentEmotion" column="sentiment_emotion"/>
+        <result property="sentimentLabel" column="sentiment_label"/>
+        <result property="sentimentScore" column="sentiment_score"/>
     </resultMap>
 
     <!-- [统一] parameterType 由 VO.Summary 改为 pojo.Diary -->
     <insert id="insert" parameterType="com.sixth.soul_trail.pojo.Diary" useGeneratedKeys="true" keyProperty="id">
-        insert into diary (user_id, title, content, mood_type, sentiment_emotion, diary_date)
-        values (#{userId}, #{title}, #{content}, #{moodType}, #{sentimentEmotion}, #{diaryDate})
+        insert into diary (user_id, title, content, mood_type, sentiment_emotion,
+                            sentiment_score, sentiment_label, diary_date)
+        values (#{userId}, #{title}, #{content}, #{moodType}, #{sentimentEmotion},
+                #{sentimentScore}, #{sentimentLabel}, #{diaryDate})
     </insert>
 
     <select id="selectPageByUserId" resultMap="DiaryResultMap">
-        SELECT id, title, content, created_at, updated_at
+        SELECT id, title, content, mood_type,
+               sentiment_emotion, sentiment_score, sentiment_label,
+               confidence, keywords, created_at, updated_at
         FROM diary
         WHERE user_id = #{userId} AND is_deleted = 0
         ORDER BY created_at DESC
@@ -39,8 +46,10 @@
 
     <!-- [统一] parameterType 由 VO.Summary 改为 pojo.Diary -->
     <update id="update" parameterType="com.sixth.soul_trail.pojo.Diary">
-        UPDATE diary SET title = #{title}, content = #{content},mood_type=#{moodType}
+        UPDATE diary SET title = #{title}, content = #{content}, mood_type = #{moodType},
+                         sentiment_score = #{sentimentScore}, sentiment_label = #{sentimentLabel}, sentiment_emotion = #{sentimentEmotion}
         WHERE id = #{id} AND user_id = #{userId} AND is_deleted = 0
+
     </update>
 
     <update id="softDeleteById">
@@ -56,9 +65,10 @@
     </select>   <!-- [修改] 原缺失 </select> 闭合标签（合并冲突残留），已补上 -->
 
     <!-- 按天聚合统计日记数据 -->
+    <!-- [修改] 原 DATE(created_at) 全部改为 diary_date：统计应按日记归属日期，而不是写入时间（支持补写以前的日记） -->
     <select id="selectDailyStats" resultType="java.util.Map">
         SELECT
-        DATE(created_at) AS diary_date,
+        diary_date,
         COUNT(*) AS diary_count,
         ROUND(AVG(sentiment_score), 2) AS avg_score,   <!-- [修改] 原为 AVG(emotion_score)，真实列 sentiment_score -->
         SUBSTRING_INDEX(
@@ -68,8 +78,8 @@
         FROM diary
         WHERE user_id = #{userId}
         AND is_deleted = 0
-        AND DATE(created_at) BETWEEN #{start} AND #{end}
-        GROUP BY DATE(created_at)
+        AND diary_date BETWEEN #{start} AND #{end}
+        GROUP BY diary_date
         ORDER BY diary_date ASC
     </select>
 

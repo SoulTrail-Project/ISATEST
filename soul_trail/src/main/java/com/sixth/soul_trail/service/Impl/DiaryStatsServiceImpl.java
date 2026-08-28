@@ -58,7 +58,9 @@ public class DiaryStatsServiceImpl implements DiaryStatsService {
 
             CalendarDayVO dayVO = new CalendarDayVO();
             dayVO.setDate(date.toString());
-            dayVO.setAvgScore(((Number) row.get("avg_score")).doubleValue());
+            // 分数可能为 null（算法服务未接入，sentiment_score 为空），判空防 NPE
+            Object scoreObj = row.get("avg_score");
+            dayVO.setAvgScore(scoreObj == null ? null : ((Number) scoreObj).doubleValue());
             dayVO.setCount(((Number) row.get("diary_count")).intValue());
 
             String moodCode = (String) row.get("main_mood");
@@ -130,8 +132,9 @@ public class DiaryStatsServiceImpl implements DiaryStatsService {
                 vo.setScore(null);
                 vo.setCount(0);
             } else {
-                // 这天有日记
-                vo.setScore(((Number) row.get("avg_score")).doubleValue());
+                // 这天有日记——分数可能为 null（算法服务还没接入时 sentiment_score 全是 null），必须判空
+                Object scoreObj = row.get("avg_score");
+                vo.setScore(scoreObj == null ? null : ((Number) scoreObj).doubleValue());
                 vo.setCount(((Number) row.get("diary_count")).intValue());
             }
             result.add(vo);
@@ -186,12 +189,18 @@ public class DiaryStatsServiceImpl implements DiaryStatsService {
         // 打卡率 = 写日记天数 / 总天数，保留两位小数
         stats.setDiaryRate(Math.round(statsMap.size() * 100.0 / totalDays) / 100.0);
 
-        // 统计积极/中性/消极天数 + 算总分
+        // 统计积极/中性/消极天数 + 算总分（分数为 null 的天跳过，只统计有分的天）
         int positive = 0, neutral = 0, negative = 0;
+        int scoredDays = 0;
         double totalScore = 0;
 
         for (Map<String, Object> row : statsMap.values()) {
-            double score = ((Number) row.get("avg_score")).doubleValue();
+            Object scoreObj = row.get("avg_score");
+            if (scoreObj == null) {
+                continue;   // 这天有日记但还没算出情感分
+            }
+            double score = ((Number) scoreObj).doubleValue();
+            scoredDays++;
             totalScore += score;
             if (score >= 0.6) positive++;           // >=0.6 = 积极
             else if (score >= 0.4) neutral++;       // 0.4~0.6 = 中性
@@ -202,11 +211,11 @@ public class DiaryStatsServiceImpl implements DiaryStatsService {
         stats.setNeutralDays(neutral);
         stats.setNegativeDays(negative);
 
-        // 月均情感分
-        if (statsMap.isEmpty()) {
+        // 月均情感分（按有分的天平均，而不是按写日记的天数）
+        if (scoredDays == 0) {
             stats.setAvgEmotion(0.0);
         } else {
-            double avg = totalScore / statsMap.size();
+            double avg = totalScore / scoredDays;
             stats.setAvgEmotion(Math.round(avg * 100.0) / 100.0);
         }
 
