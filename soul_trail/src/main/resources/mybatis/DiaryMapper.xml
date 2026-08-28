@@ -95,4 +95,8 @@
         ORDER BY COUNT(*) DESC
         LIMIT #{limit}
     </select>
+
+    <select id="selectDiaryDate" resultType="com.sixth.soul_trail.pojo.Diary">
+        select * from diary where diary_date = #{diaryDate} and user_id = #{userId}
+    </select>
 </mapper>

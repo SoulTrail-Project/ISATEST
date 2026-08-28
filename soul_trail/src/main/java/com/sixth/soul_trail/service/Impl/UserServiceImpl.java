@@ -6,6 +6,7 @@ import com.sixth.soul_trail.mapper.UserMapper;
 import com.sixth.soul_trail.pojo.User;
 import com.sixth.soul_trail.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -81,11 +82,8 @@ public class UserServiceImpl implements UserService{
     public UserInfoVO getUserInfoVO(Long userId) {
         User user = userMapper.selectById(userId);
         UserInfoVO userInfoVO = new UserInfoVO();
-        userInfoVO.setId(user.getId());
-        userInfoVO.setUsername(user.getUsername());
-        userInfoVO.setNickname(user.getNickname());
-        userInfoVO.setAvatar(user.getAvatarUrl());
-        userInfoVO.setCreatedAt(user.getCreatedAt());
+        BeanUtils.copyProperties(user, userInfoVO);
         return userInfoVO;
     }
+
 }

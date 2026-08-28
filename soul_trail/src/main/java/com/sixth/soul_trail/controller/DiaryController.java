@@ -5,10 +5,14 @@ import com.sixth.soul_trail.VO.DiaryUpdateRequestVO;
 import com.sixth.soul_trail.VO.DiaryVO;
 import com.sixth.soul_trail.VO.DiaryPageVO;
 import com.sixth.soul_trail.common.Result;
+import com.sixth.soul_trail.mapper.DiaryMapper;
+import com.sixth.soul_trail.pojo.Diary;
 import com.sixth.soul_trail.service.DiaryService;
 import com.sixth.soul_trail.utils.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/diaries")
@@ -16,6 +20,8 @@ public class DiaryController {
 
     @Autowired
     private DiaryService diaryService;
+    @Autowired
+    private DiaryMapper diaryMapper;
 
     /**
      * POST /api/diaries
@@ -79,6 +85,14 @@ public class DiaryController {
         Long userId = SecurityUtil.getCurrentUserId();
         diaryService.delete(userId, diaryId);
         return Result.success(null);
+    }
+
+    @GetMapping
+    public Result<DiaryVO> getDiaryByDate(@RequestParam(defaultValue = "2026-01-01") String date) {
+        Long userId = SecurityUtil.getCurrentUserId();
+        LocalDate localDate = LocalDate.parse(date);
+        DiaryVO diaryVO = diaryService.getDiaryByDate(localDate, userId);
+        return Result.success(diaryVO);
     }
 
 }

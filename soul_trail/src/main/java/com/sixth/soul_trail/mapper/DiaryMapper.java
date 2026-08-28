@@ -42,4 +42,7 @@ public interface DiaryMapper {
                                    @Param("start") LocalDate start,
                                    @Param("end") LocalDate end,
                                    @Param("limit") Integer limit);
+
+    Diary selectDiaryDate(@Param("diaryDate") LocalDate diaryDate,
+                          @Param("userId") Long userId);
 }

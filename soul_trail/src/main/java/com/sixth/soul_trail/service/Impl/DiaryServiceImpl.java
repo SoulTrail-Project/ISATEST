@@ -125,4 +125,13 @@ public class DiaryServiceImpl implements DiaryService {
         BeanUtils.copyProperties(diary, vo);
         return vo;
     }
+
+    @Override
+    public DiaryVO getDiaryByDate(LocalDate localDate, Long userId) {
+        Diary diary = diaryMapper.selectDiaryDate(localDate,userId);
+        DiaryVO diaryVO = new DiaryVO();
+        BeanUtils.copyProperties(diary, diaryVO);
+        return diaryVO;
+    }
+
 }
