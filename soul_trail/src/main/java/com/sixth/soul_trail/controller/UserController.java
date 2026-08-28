@@ -149,4 +149,11 @@ public class UserController {
         return Result.success(avatarUrl);
     }
 
+    @GetMapping("/info")
+    public Result<UserInfoVO> getUserInfo() {
+        Long currentUserId = SecurityUtil.getCurrentUserId();
+        UserInfoVO userInfoVO = userService.getUserInfoVO(currentUserId);
+        return Result.success(userInfoVO);
+    }
+
 }

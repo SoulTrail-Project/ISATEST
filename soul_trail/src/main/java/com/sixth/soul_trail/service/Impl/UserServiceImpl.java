@@ -1,5 +1,6 @@
 package com.sixth.soul_trail.service.Impl;
 
+import com.sixth.soul_trail.VO.UserInfoVO;
 import com.sixth.soul_trail.exception.BusinessException;
 import com.sixth.soul_trail.mapper.UserMapper;
 import com.sixth.soul_trail.pojo.User;
@@ -76,4 +77,15 @@ public class UserServiceImpl implements UserService{
         userMapper.updateAvatar(currentUserId,avatarUrl);
     }
 
+    @Override
+    public UserInfoVO getUserInfoVO(Long userId) {
+        User user = userMapper.selectById(userId);
+        UserInfoVO userInfoVO = new UserInfoVO();
+        userInfoVO.setId(user.getId());
+        userInfoVO.setUsername(user.getUsername());
+        userInfoVO.setNickname(user.getNickname());
+        userInfoVO.setAvatar(user.getAvatarUrl());
+        userInfoVO.setCreatedAt(user.getCreatedAt());
+        return userInfoVO;
+    }
 }

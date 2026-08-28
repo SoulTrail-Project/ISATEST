@@ -1,5 +1,6 @@
 package com.sixth.soul_trail.service;
 
+import com.sixth.soul_trail.VO.UserInfoVO;
 import com.sixth.soul_trail.pojo.User;
 
 public interface UserService {
@@ -13,4 +14,6 @@ public interface UserService {
     void updateNickname(Long userId, String nickname);
 
     void updateAvatar(Long currentUserId, String avatarUrl);
+
+    UserInfoVO getUserInfoVO(Long userId);
 }
