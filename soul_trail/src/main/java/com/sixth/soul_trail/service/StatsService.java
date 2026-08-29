@@ -6,6 +6,7 @@ import com.sixth.soul_trail.VO.EmotionDistributionVO;
 import com.sixth.soul_trail.VO.WordCloudVO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface StatsService {
     // interface_8
@@ -16,4 +17,6 @@ public interface StatsService {
     List<EmotionDistributionVO> getEmotionDistribution(Long userId);
     // interface_11
     List<WordCloudVO> getWordCloud(Long userId);
+    // interface_情绪频率, 按时间维度统计(7/30/all)
+    Map<String,Long> getEmotionalFrequency(String days);
 }

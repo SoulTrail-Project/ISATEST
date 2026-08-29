@@ -99,4 +99,12 @@
     <select id="selectDiaryDate" resultType="com.sixth.soul_trail.pojo.Diary">
         select * from diary where diary_date = #{diaryDate} and user_id = #{userId}
     </select>
+
+    <select id="selectEmotionalFrequency" resultType="string">
+        select diary.mood_type from diary where diary_date >= DATE_SUB(now(), interval #{days} day)
+    </select>
+
+    <select id="selectAllMoodType" resultType="string">
+        select diary.mood_type from diary
+    </select>
 </mapper>

@@ -57,4 +57,7 @@ public class DiaryStatsController {
         List<MoodThemeVO> data = diaryStatsService.getAllMoodTypes();
         return Result.success(data);
     }
+
+    @GetMapping("/stats/emotion-distribution")
+    public Result<>
 }

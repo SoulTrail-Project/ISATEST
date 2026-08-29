@@ -1,9 +1,6 @@
 package com.sixth.soul_trail.controller;
 
-import com.sixth.soul_trail.VO.DiaryStatisticsData;
-import com.sixth.soul_trail.VO.TrendVo;
-import com.sixth.soul_trail.VO.EmotionDistributionVO;
-import com.sixth.soul_trail.VO.WordCloudVO;
+import com.sixth.soul_trail.VO.*;
 import com.sixth.soul_trail.common.Result;
 import com.sixth.soul_trail.service.StatsService;
 import com.sixth.soul_trail.utils.JwtUtil;
@@ -11,7 +8,9 @@ import com.sixth.soul_trail.utils.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -78,6 +77,16 @@ public class StatsController {
         return Result.success(data);
     }
 
+    @GetMapping("/emotion-distribution")
+    public Result<Map<String,Long>> getEmotionalFrequency (@RequestParam(defaultValue = "7") String days) {
+        String[] daysArr = {"7","30","all"};
+        if (!Arrays.asList(daysArr).contains(days)) {
+            return Result.error(200,"只能查询三种情况: 7/30/all");
+        }
+        Map<String,Long> emotionalFrequencyList = statsService.getEmotionalFrequency(days);
+        return Result.success(emotionalFrequencyList);
+    }
+
     // interface_11
     @GetMapping("/word-cloud")
     public Result<List<WordCloudVO>> getWordCloud() {
@@ -88,5 +97,10 @@ public class StatsController {
         List<WordCloudVO> data = statsService.getWordCloud(userId);
         return Result.success(data);
     }
+
+
+
+
+
 
 }

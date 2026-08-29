@@ -45,4 +45,9 @@ public interface DiaryMapper {
 
     Diary selectDiaryDate(@Param("diaryDate") LocalDate diaryDate,
                           @Param("userId") Long userId);
+
+    List<String> selectEmotionalFrequency(@Param("days") int days);
+
+    List<String> selectAllMoodType();
+
 }
