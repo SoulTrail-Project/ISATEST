@@ -54,13 +54,13 @@ public class StatsController {
         return Result.success(data);
     }
 
-    @GetMapping("/emotion-distribution")
-    public Result<Map<String,Long>> getEmotionalFrequency (@RequestParam(defaultValue = "7") String days) {
+    @GetMapping(value ="/emotion-distribution", params = "range")//两个方法抢同一个 URL
+    public Result<Map<String,Long>> getEmotionalFrequency (@RequestParam(defaultValue = "7") String range) {
         String[] daysArr = {"7","30","all"};
-        if (!Arrays.asList(daysArr).contains(days)) {
-            return Result.error(200,"只能查询三种情况: 7/30/all");
+        if (!Arrays.asList(daysArr).contains(range)) {
+            return Result.error(400,"只能查询三种情况: 7/30/all");
         }
-        Map<String,Long> emotionalFrequencyList = statsService.getEmotionalFrequency(days);
+        Map<String,Long> emotionalFrequencyList = statsService.getEmotionalFrequency(range);
         return Result.success(emotionalFrequencyList);
     }
 
