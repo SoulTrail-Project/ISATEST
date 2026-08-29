@@ -22,39 +22,16 @@ public class StatsController {
 
     // interface_8
     @PostMapping("/summary")
-    public Result<DiaryStatisticsData> getSummaryStats(@RequestParam Long userId) {
+    public Result<DiaryStatisticsData> getSummaryStats(){
+        Long userId = SecurityUtil.getCurrentUserId();
         DiaryStatisticsData data = statsService.getSummaryStats(userId);
         return Result.success(data);
     }
 
     // interface_9
     @PostMapping("/trend")
-    public Result<List<TrendVo>> getTrendStats(
-            @RequestParam int range,
-            @RequestHeader(value = "Authorization", required = false) String authHeader
-    ) {
-
-        if (authHeader == null || authHeader.isEmpty()) {
-            return new Result<>(401, "未登录", null);
-        }
-
-        // 1. 从请求头获取 Token
-        String token = authHeader.startsWith("Bearer ") ? authHeader.substring(7) : authHeader;
-        if (token == null || token.isEmpty()) {
-            return new Result<>(401, "未登录或Token已过期", null);
-        }
-
-        // 2. 去掉 "Bearer " 前缀（如果有）
-        if (token.startsWith("Bearer ")) {
-            token = token.substring(7);
-        }
-
-        // 3. 解析 Token 获取 userId
-        Long userId = JwtUtil.parseToken(token);
-        if (userId == null) {
-            return new Result<>(401, "Token无效或已过期", null);
-        }
-
+    public Result<List<TrendVo>> getTrendStats(@RequestParam int range) {
+        Long userId = SecurityUtil.getCurrentUserId();
         // 4. 校验 range 参数
         if (range != 7 && range != 30) {
             return new Result<>(400, "range 参数必须为 7 或 30", null);
