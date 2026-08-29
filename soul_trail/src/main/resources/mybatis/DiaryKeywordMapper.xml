@@ -3,15 +3,38 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sixth.soul_trail.mapper.DiaryKeywordMapper">
 
+    <!-- 词云：统计出现次数 >= 3 的词，取前 50
+         注意 diary_keyword 存的是「算法从正文抽的关键词」，
+             跟用户手动打的标签（diary.tags）是两套数据，别混用 -->
     <select id="selectWordCloud" resultType="com.sixth.soul_trail.VO.WordCloudVO">
         SELECT dk.word AS word, COUNT(*) AS value
         FROM diary_keyword dk
                  JOIN diary d ON dk.diary_id = d.id
         WHERE d.user_id = #{userId}
+          AND d.is_deleted = 0   <!-- 补上逻辑删除过滤，否则已删除的日记仍会进词云统计 -->
         GROUP BY dk.word
         HAVING COUNT(*) >= 3
         ORDER BY value DESC
         LIMIT 50
+    </select>
+
+    <!-- ========== 以下三条已废弃，暂无任何调用方 ==========
+         背景：早期打算用 diary_keyword 存用户标签，后改为存 diary.tags（JSON 列）。
+               确认不再需要时，可连同 DiaryKeywordMapper.java 里的接口方法一并删除。 -->
+
+    <insert id="insertBatch">
+        INSERT INTO diary_keyword (diary_id, word) VALUES
+        <foreach collection="tags" item="tag" separator=",">
+            (#{diaryId}, #{tag})
+        </foreach>
+    </insert>
+
+    <delete id="deleteByDiaryId">
+        DELETE FROM diary_keyword WHERE diary_id = #{diaryId}
+    </delete>
+
+    <select id="selectWordsByDiaryId" resultType="string">
+        SELECT word FROM diary_keyword WHERE diary_id = #{diaryId}
     </select>
 
 </mapper>

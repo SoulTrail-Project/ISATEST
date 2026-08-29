@@ -36,7 +36,7 @@ public interface DiaryMapper {
                                                @Param("end") LocalDate end);
 
     /**
-     * 查询热词TopN
+     * 查询热词TopN（词云用，数据来源 diary_keyword 表，跟用户标签无关）
      */
     List<String> selectTopKeywords(@Param("userId") Long userId,
                                    @Param("start") LocalDate start,
@@ -45,4 +45,16 @@ public interface DiaryMapper {
 
     Diary selectDiaryDate(@Param("diaryDate") LocalDate diaryDate,
                           @Param("userId") Long userId);
+
+    /**
+     * 本周高频标签：从 diary.tags（JSON 数组列）拆出每个标签并统计次数
+     *
+     * @param startDate 起始日期（传本周一）
+     * @param endDate   结束日期（传今天）
+     * @param limit     返回条数
+     */
+    List<String> selectTopTagsByUserId(@Param("userId") Long userId,
+                                       @Param("startDate") LocalDate startDate,
+                                       @Param("endDate") LocalDate endDate,
+                                       @Param("limit") Integer limit);
 }

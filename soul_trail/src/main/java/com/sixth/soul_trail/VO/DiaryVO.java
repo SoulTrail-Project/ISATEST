@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class DiaryVO {
@@ -28,6 +29,8 @@ public class DiaryVO {
     private String confidence;
 
     private String keywords;
+
+    private List<String> tags;
 
     private LocalDateTime createdAt;
 

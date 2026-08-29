@@ -29,8 +29,8 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private UserMapper userMapper;
+//    @Autowired
+//    private UserMapper userMapper;
 
     /*
      * 用户注册接口
@@ -50,10 +50,13 @@ public class UserController {
      */
     @PostMapping("/login")
     public Result login(@RequestBody User loginUser) {
-        Long userId = SecurityUtil.getCurrentUserId();
-        log.info("当前登录userId:{}",userId);
-// 如果你这里要查用户，用 selectById
-        User user = userMapper.selectById(userId);
+        //登录接口本身不需要 token，直接按用户名查
+
+//        Long userId = SecurityUtil.getCurrentUserId();
+//        log.info("当前登录userId:{}",userId);
+//// 如果你这里要查用户，用 selectById
+//        User user = userMapper.selectById(userId);
+
         //判断用户是否存在
         User dbUser = userService.findByUserName(loginUser.getUsername());
         if  (dbUser == null) {
