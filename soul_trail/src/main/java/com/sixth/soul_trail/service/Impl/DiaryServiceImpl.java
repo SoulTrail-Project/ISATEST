@@ -1,5 +1,7 @@
 package com.sixth.soul_trail.service.Impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sixth.soul_trail.VO.DiaryCreateRequestVO;
 import com.sixth.soul_trail.VO.DiaryUpdateRequestVO;
 import com.sixth.soul_trail.VO.DiaryVO;
@@ -8,19 +10,45 @@ import com.sixth.soul_trail.exception.BusinessException;
 import com.sixth.soul_trail.mapper.DiaryMapper;
 import com.sixth.soul_trail.pojo.Diary;
 import com.sixth.soul_trail.service.DiaryService;
+import com.sixth.soul_trail.utils.SentimentClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
+/**
+ * 日记业务实现
+ *
+ * 关于标签的两套数据（务必分清）：
+ *   1. 用户标签库  —— 存在 user_tag 表，由 TagService 管，含义是「我可以选择哪些标签」
+ *   2. 日记的标签  —— 存在 diary.tags 列（JSON 数组），由本类管，含义是「这篇日记实际打了哪些标签」
+ * 两者互相独立：在标签库加了标签不会自动打给任何日记，必须写日记时勾选才会写入 diary.tags。
+ */
 @Service
 public class DiaryServiceImpl implements DiaryService {
 
+    /** 一篇日记最多能打多少个标签（跟标签库的「每人最多 20 个」是两个独立上限） */
+    private static final int MAX_TAGS_PER_DIARY = 10;
+
     @Autowired
     private DiaryMapper diaryMapper;
+
+    @Autowired
+    private SentimentClient sentimentClient;
+
+    /**
+     * Jackson 的 JSON 工具，由 Spring Boot 自动装配，用于 List<String> 和 JSON 字符串互转
+     */
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Override
     public DiaryVO create(Long userId, DiaryCreateRequestVO request) {
@@ -32,6 +60,17 @@ public class DiaryServiceImpl implements DiaryService {
         diary.setMoodType(request.getMoodType());
         //补充 diaryDate，避免数据库 NOT NULL 约束报错
         diary.setDiaryDate(LocalDate.now());
+        // 标签转成 JSON 字符串，跟日记同一条 INSERT 写入 diary.tags 列
+        diary.setTags(toJsonArray(request.getTags()));
+
+        // 调情感分析算法服务（不在线/超时返回 null，日记照存，分数留空）
+        Map<String, Object> sentiment = sentimentClient.analyze(request.getContent());
+        if (sentiment != null) {
+            diary.setSentimentScore((Double) sentiment.get("score"));
+            diary.setSentimentLabel((String) sentiment.get("label"));   // 注意实体字段拼写为 sentimentLabel
+            diary.setSentimentEmotion((String) sentiment.get("label"));
+        }
+
         diaryMapper.insert(diary);
 
         return convertToVO(diary);
@@ -71,10 +110,29 @@ public class DiaryServiceImpl implements DiaryService {
         if (diary == null) {
             throw new BusinessException(404, "日记不存在");
         }
-        diary.setTitle(request.getTitle() != null ? request.getTitle() : "");
-        diary.setContent(request.getContent());
-        //新增MoodType
-        diary.setMoodType(request.getMoodType());
+        //记得判断正文非空
+        if(request.getContent() !=null && !request.getContent().trim().isEmpty()){
+            diary.setContent(request.getContent());
+            Map<String, Object> sentiment = sentimentClient.analyze(request.getContent());
+            if (sentiment != null) {
+                diary.setSentimentScore((Double) sentiment.get("score"));
+                diary.setSentimentLabel((String) sentiment.get("label"));
+                diary.setSentimentEmotion((String) sentiment.get("label"));
+            }
+        }
+        if (request.getTitle() != null) {
+            diary.setTitle(request.getTitle());
+        }
+        if (request.getMoodType() != null) {
+            diary.setMoodType(request.getMoodType());
+        }
+
+        // 标签全量替换：前端传最终数组，传了就整体覆盖；不传（null）则保持原样不动。
+        // 想删掉某个标签，前端传「去掉该标签后的新数组」即可，不需要单独的删除接口。
+        if (request.getTags() != null) {
+            diary.setTags(toJsonArray(request.getTags()));
+        }
+
         diaryMapper.update(diary);
 
         return convertToVO(diary);
@@ -88,12 +146,91 @@ public class DiaryServiceImpl implements DiaryService {
         }
     }
 
+    @Override
+    public DiaryVO getDiaryByDate(LocalDate localDate, Long userId) {
+        Diary diary = diaryMapper.selectDiaryDate(localDate, userId);
+
+        if (diary == null) {
+            return null;   // 前端拿到 data = null，符合文档约定
+        }
+
+        // 走统一的 convertToVO，否则标签和 score 都会丢失（原来这里是直接 BeanUtils.copyProperties）
+        return convertToVO(diary);
+    }
+
+    @Override
+    public List<String> getTopTags(Long userId, int limit) {
+        // 统计区间：本周一 ~ 今天，对应设计图「本周小回顾」
+        LocalDate today = LocalDate.now();
+        LocalDate monday = today.with(DayOfWeek.MONDAY);
+        return diaryMapper.selectTopTagsByUserId(userId, monday, today, limit);
+    }
+
+    // ==================== 私有工具方法 ====================
+
+    /**
+     * 清洗标签：去 null、去前后空白、去空串、去重，最多保留 MAX_TAGS_PER_DIARY 个
+     */
+    private List<String> normalizeTags(List<String> tags) {
+        if (tags == null || tags.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return tags.stream()
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .distinct()
+                .limit(MAX_TAGS_PER_DIARY)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * List<String> 转 JSON 字符串，写入 diary.tags 列
+     *
+     * @return 清洗后的 JSON 数组字符串；若没有有效标签则返回 null
+     *         注意：MySQL 的 JSON 列不接受空字符串，所以这里必须返回 null 而不是 ""
+     */
+    private String toJsonArray(List<String> tags) {
+        List<String> cleaned = normalizeTags(tags);
+        if (cleaned.isEmpty()) {
+            return null;
+        }
+        try {
+            return objectMapper.writeValueAsString(cleaned);
+        } catch (Exception e) {
+            // 序列化失败不该让日记存不进去，退化为不打标签
+            return null;
+        }
+    }
+
+    /**
+     * JSON 字符串转 List<String>，用于把 diary.tags 读出来返回给前端
+     *
+     * @return 标签列表；null / 空串 / 解析失败都返回空集合，避免接口 500
+     */
+    private List<String> fromJsonArray(String json) {
+        if (json == null || json.isBlank()) {
+            return Collections.emptyList();
+        }
+        try {
+            return objectMapper.readValue(json, new TypeReference<List<String>>() {});
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
+    }
+
     /**
      * 实体类转 VO，避免把 UserId、isDeleted 等内部字段暴露给前端
+     * 标签直接从已查出的 diary 对象里解析 JSON，不需要额外查库（避免了 N+1 查询）
      */
     private DiaryVO convertToVO(Diary diary) {
         DiaryVO vo = new DiaryVO();
+        if (diary.getSentimentScore() != null) {
+            vo.setScore(diary.getSentimentScore().floatValue());
+        }
         BeanUtils.copyProperties(diary, vo);
+        vo.setTags(fromJsonArray(diary.getTags()));
         return vo;
     }
+
 }

@@ -24,9 +24,11 @@ public class Diary {
 
     private String moodType;
 
-    private String sentimentLable;
+    private String sentimentLabel;
 
     private String sentimentEmotion;
+
+    private Double sentimentScore;
 
     private String confidence;
 

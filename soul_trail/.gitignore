@@ -17,5 +17,11 @@ Thumbs.db
 *.log
 *.tmp
 
+# 编译产物（双保险，target/ 已忽略，散落的 .class 也防一手）
+*.class
+
+# 用户上传文件（运行时生成，含测试头像，不应入库）
+uploads/
+
 # idea http测试脚本
 *.http

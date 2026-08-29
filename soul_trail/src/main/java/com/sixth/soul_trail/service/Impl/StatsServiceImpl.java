@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class StatsServiceImpl implements StatsService{
@@ -60,6 +61,19 @@ public class StatsServiceImpl implements StatsService{
     @Override
     public List<WordCloudVO> getWordCloud(Long userId) {
         return diaryKeywordMapper.selectWordCloud(userId);
+    }
+
+    @Override
+    public Map<String,Long> getEmotionalFrequency(String days) {
+        List<String> emotionalFrequencyList;
+        if (days.equals("all")) {
+            emotionalFrequencyList = diaryMapper.selectAllMoodType();
+        }
+        else {
+            emotionalFrequencyList = diaryMapper.selectEmotionalFrequency(Integer.parseInt(days));
+        }
+        return emotionalFrequencyList.stream()
+                .collect(Collectors.groupingBy(String::toString,Collectors.counting()));
     }
 
 }

@@ -13,16 +13,26 @@
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
         <result property="moodType" column="mood_type"/>
+        <result property="sentimentEmotion" column="sentiment_emotion"/>
+        <result property="sentimentLabel" column="sentiment_label"/>
+        <result property="sentimentScore" column="sentiment_score"/>
+        <!-- 用户标签：MySQL JSON 列，经 JDBC 读出来就是字符串，由 Service 层用 ObjectMapper 解析成 List -->
+        <result property="tags" column="tags"/>
     </resultMap>
 
     <!-- [统一] parameterType 由 VO.Summary 改为 pojo.Diary -->
+    <!-- tags 为 JSON 列，没有标签时 Service 层会传 null，MySQL 存为 NULL -->
     <insert id="insert" parameterType="com.sixth.soul_trail.pojo.Diary" useGeneratedKeys="true" keyProperty="id">
-        insert into diary (user_id, title, content, mood_type, sentiment_emotion, diary_date)
-        values (#{userId}, #{title}, #{content}, #{moodType}, #{sentimentEmotion}, #{diaryDate})
+        insert into diary (user_id, title, content, mood_type, sentiment_emotion,
+                            sentiment_score, sentiment_label, diary_date, tags)
+        values (#{userId}, #{title}, #{content}, #{moodType}, #{sentimentEmotion},
+                #{sentimentScore}, #{sentimentLabel}, #{diaryDate}, #{tags})
     </insert>
 
     <select id="selectPageByUserId" resultMap="DiaryResultMap">
-        SELECT id, title, content, created_at, updated_at
+        SELECT id, title, content, mood_type,
+               sentiment_emotion, sentiment_score, sentiment_label,
+               confidence, keywords, created_at, updated_at, tags
         FROM diary
         WHERE user_id = #{userId} AND is_deleted = 0
         ORDER BY created_at DESC
@@ -38,9 +48,13 @@
     </select>
 
     <!-- [统一] parameterType 由 VO.Summary 改为 pojo.Diary -->
+    <!-- tags 全量覆盖：Service 层只在前端传了 tags 时才赋值，不传则保持原值不变 -->
     <update id="update" parameterType="com.sixth.soul_trail.pojo.Diary">
-        UPDATE diary SET title = #{title}, content = #{content},mood_type=#{moodType}
+        UPDATE diary SET title = #{title}, content = #{content}, mood_type = #{moodType},
+                         sentiment_score = #{sentimentScore}, sentiment_label = #{sentimentLabel},
+                         sentiment_emotion = #{sentimentEmotion}, tags = #{tags}
         WHERE id = #{id} AND user_id = #{userId} AND is_deleted = 0
+
     </update>
 
     <update id="softDeleteById">
@@ -56,9 +70,10 @@
     </select>   <!-- [修改] 原缺失 </select> 闭合标签（合并冲突残留），已补上 -->
 
     <!-- 按天聚合统计日记数据 -->
+    <!-- [修改] 原 DATE(created_at) 全部改为 diary_date：统计应按日记归属日期，而不是写入时间（支持补写以前的日记） -->
     <select id="selectDailyStats" resultType="java.util.Map">
         SELECT
-        DATE(created_at) AS diary_date,
+        diary_date,
         COUNT(*) AS diary_count,
         ROUND(AVG(sentiment_score), 2) AS avg_score,   <!-- [修改] 原为 AVG(emotion_score)，真实列 sentiment_score -->
         SUBSTRING_INDEX(
@@ -68,8 +83,8 @@
         FROM diary
         WHERE user_id = #{userId}
         AND is_deleted = 0
-        AND DATE(created_at) BETWEEN #{start} AND #{end}
-        GROUP BY DATE(created_at)
+        AND diary_date BETWEEN #{start} AND #{end}
+        GROUP BY diary_date
         ORDER BY diary_date ASC
     </select>
 
@@ -83,6 +98,39 @@
         AND DATE(d.created_at) BETWEEN #{start} AND #{end}   <!-- [修改] 原为 diary_keyword.created_at（不存在），改 d.created_at -->
         GROUP BY dk.word
         ORDER BY COUNT(*) DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="selectDiaryDate" resultType="com.sixth.soul_trail.pojo.Diary">
+        select * from diary where diary_date = #{diaryDate} and user_id = #{userId}
+    </select>
+
+    <select id="selectEmotionalFrequency" resultType="string">
+        select diary.mood_type from diary where diary_date >= DATE_SUB(now(), interval #{days} day)
+    </select>
+
+    <select id="selectAllMoodType" resultType="string">
+        select diary.mood_type from diary
+    </select>
+
+    <!-- 本周高频标签（前端「本周小回顾 → 高频标签」）
+         用 JSON_TABLE 把 tags 这个 JSON 数组 ["学习","压力"] 拆成多行，再按标签分组计数。
+         必加的两个防护：
+           1) d.tags IS NOT NULL   —— 没打标签的日记，JSON_TABLE 会直接报错
+           2) JSON_LENGTH(d.tags) > 0 —— 空数组 [] 同理
+         排序：次数多的在前；次数相同则最近写过的在前。
+         注：JSON_TABLE 需要 MySQL 8.0+，当前 RDS 为 8.0.36，可用。-->
+    <select id="selectTopTagsByUserId" resultType="string">
+        SELECT jt.tag
+        FROM diary d,
+             JSON_TABLE(d.tags, '$[*]' COLUMNS (tag VARCHAR(20) PATH '$')) jt
+        WHERE d.user_id = #{userId}
+          AND d.is_deleted = 0
+          AND d.diary_date BETWEEN #{startDate} AND #{endDate}
+          AND d.tags IS NOT NULL
+          AND JSON_LENGTH(d.tags) > 0
+        GROUP BY jt.tag
+        ORDER BY COUNT(*) DESC, MAX(d.created_at) DESC
         LIMIT #{limit}
     </select>
 </mapper>

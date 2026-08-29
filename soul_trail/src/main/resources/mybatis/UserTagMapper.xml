@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sixth.soul_trail.mapper.UserTagMapper">
+    <insert id="insert" parameterType="com.sixth.soul_trail.pojo.UserTag" useGeneratedKeys="true" keyProperty="id">
+        insert into user_tag (user_id, tag_name, is_preset, sort_order)
+        values (#{userId}, #{tagName}, #{isPreset}, #{sortOrder})
+    </insert>
+    <!-- 批量灌入系统预置标签（懒初始化用）
+         is_preset = 1 表示系统预置，sort_order = 0（排序字段暂未启用，预留）
+         注意：列名个数必须和 VALUES 后的值个数一致，否则 MySQL 报语法错误 -->
+    <insert id="insertBatch">
+        insert into user_tag (user_id, tag_name,is_preset,sort_order) values
+        <foreach collection="tags" item="tag" separator=",">
+            (#{userId}, #{tag}, 1, 0)
+        </foreach>
+    </insert>
+    <select id="selectTagNamesByUserId" resultType="java.lang.String">
+        select tag_name
+        from user_tag
+        where user_id = #{userId}
+        order by sort_order ASC, id ASC
+    </select>
+
+    <delete id="deleteByUserIdAngTagName">
+        delete from user_tag
+        where user_id = #{userId} and tag_name = #{tagName}
+    </delete>
+
+    <select id="countByUserId" resultType="java.lang.Integer">
+        select count(*) from user_tag where user_id = #{userId}
+    </select>
+
+</mapper>
