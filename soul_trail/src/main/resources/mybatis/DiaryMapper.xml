@@ -105,6 +105,14 @@
         select * from diary where diary_date = #{diaryDate} and user_id = #{userId}
     </select>
 
+    <select id="selectEmotionalFrequency" resultType="string">
+        select diary.mood_type from diary where diary_date >= DATE_SUB(now(), interval #{days} day)
+    </select>
+
+    <select id="selectAllMoodType" resultType="string">
+        select diary.mood_type from diary
+    </select>
+
     <!-- 本周高频标签（前端「本周小回顾 → 高频标签」）
          用 JSON_TABLE 把 tags 这个 JSON 数组 ["学习","压力"] 拆成多行，再按标签分组计数。
          必加的两个防护：

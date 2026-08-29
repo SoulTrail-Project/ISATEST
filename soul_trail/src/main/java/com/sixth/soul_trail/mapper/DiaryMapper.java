@@ -57,4 +57,8 @@ public interface DiaryMapper {
                                        @Param("startDate") LocalDate startDate,
                                        @Param("endDate") LocalDate endDate,
                                        @Param("limit") Integer limit);
+
+    List<String> selectEmotionalFrequency(@Param("days") int days);
+
+    List<String> selectAllMoodType();
 }
