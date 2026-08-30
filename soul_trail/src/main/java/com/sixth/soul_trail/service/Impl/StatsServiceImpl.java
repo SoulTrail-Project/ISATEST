@@ -64,13 +64,13 @@ public class StatsServiceImpl implements StatsService{
     }
 
     @Override
-    public Map<String,Long> getEmotionalFrequency(String days) {
+    public Map<String,Long> getEmotionalFrequency(Long userId, String days) {
         List<String> emotionalFrequencyList;
         if (days.equals("all")) {
-            emotionalFrequencyList = diaryMapper.selectAllMoodType();
+            emotionalFrequencyList = diaryMapper.selectAllMoodType(userId);
         }
         else {
-            emotionalFrequencyList = diaryMapper.selectEmotionalFrequency(Integer.parseInt(days));
+            emotionalFrequencyList = diaryMapper.selectEmotionalFrequency(userId, Integer.parseInt(days));
         }
         return emotionalFrequencyList.stream()
                 .collect(Collectors.groupingBy(String::toString,Collectors.counting()));

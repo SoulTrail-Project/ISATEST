@@ -54,13 +54,15 @@ public class StatsController {
         return Result.success(data);
     }
 
-    @GetMapping(value ="/emotion-distribution", params = "days")//两个方法抢同一个 URL
+    // interface_21 情绪频率：与接口 10 同路径，靠 days 参数区分；只统计当前登录用户
+    @GetMapping(value ="/emotion-distribution", params = "days")
     public Result<Map<String,Long>> getEmotionalFrequency (@RequestParam(defaultValue = "7") String days) {
+        Long userId = SecurityUtil.getCurrentUserId();
         String[] daysArr = {"7","30","all"};
         if (!Arrays.asList(daysArr).contains(days)) {
             return Result.error(400,"只能查询三种情况: 7/30/all");
         }
-        Map<String,Long> emotionalFrequencyList = statsService.getEmotionalFrequency(days);
+        Map<String,Long> emotionalFrequencyList = statsService.getEmotionalFrequency(userId, days);
         return Result.success(emotionalFrequencyList);
     }
 

@@ -106,11 +106,14 @@
     </select>
 
     <select id="selectEmotionalFrequency" resultType="string">
-        select diary.mood_type from diary where diary_date >= DATE_SUB(now(), interval #{days} day)
+        select diary.mood_type from diary
+        where user_id = #{userId} and is_deleted = 0
+          and diary_date >= DATE_SUB(now(), interval #{days} day)
     </select>
 
     <select id="selectAllMoodType" resultType="string">
         select diary.mood_type from diary
+        where user_id = #{userId} and is_deleted = 0
     </select>
 
     <!-- 本周高频标签（前端「本周小回顾 → 高频标签」）
