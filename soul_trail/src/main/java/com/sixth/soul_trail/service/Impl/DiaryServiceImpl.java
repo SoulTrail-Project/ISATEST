@@ -2,15 +2,14 @@ package com.sixth.soul_trail.service.Impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sixth.soul_trail.VO.DiaryCreateRequestVO;
-import com.sixth.soul_trail.VO.DiaryUpdateRequestVO;
-import com.sixth.soul_trail.VO.DiaryVO;
-import com.sixth.soul_trail.VO.DiaryPageVO;
+import com.sixth.soul_trail.VO.*;
 import com.sixth.soul_trail.exception.BusinessException;
 import com.sixth.soul_trail.mapper.DiaryMapper;
 import com.sixth.soul_trail.pojo.Diary;
 import com.sixth.soul_trail.service.DiaryService;
+import com.sixth.soul_trail.utils.SecurityUtil;
 import com.sixth.soul_trail.utils.SentimentClient;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +32,7 @@ import java.util.stream.Collectors;
  * 两者互相独立：在标签库加了标签不会自动打给任何日记，必须写日记时勾选才会写入 diary.tags。
  */
 @Service
+@Slf4j
 public class DiaryServiceImpl implements DiaryService {
 
     /** 一篇日记最多能打多少个标签（跟标签库的「每人最多 20 个」是两个独立上限） */
@@ -231,6 +231,64 @@ public class DiaryServiceImpl implements DiaryService {
         BeanUtils.copyProperties(diary, vo);
         vo.setTags(fromJsonArray(diary.getTags()));
         return vo;
+    }
+
+    @Override
+    public DiaryPageVO getDiaryByKeyword(Long userId, String keyword, int page, int pageSize) {
+        int offset = (page - 1) * pageSize;
+        List<Diary> diaryList = diaryMapper.selectKeyword(userId,keyword,offset,pageSize);
+        long total = diaryMapper.countByUserId(userId);
+        List<DiaryVO> diaryVOList = new ArrayList<>();
+        for (Diary diary : diaryList) {
+            diaryVOList.add(convertToVO(diary));
+        }
+        DiaryPageVO diaryPageVO = new DiaryPageVO();
+        diaryPageVO.setRecords(diaryVOList);
+        diaryPageVO.setTotal(total);
+        diaryPageVO.setPage(page);
+        diaryPageVO.setPageSize(pageSize);
+        return diaryPageVO;
+    };
+
+    @Override
+    public List<DiaryVO> getPrevNextDiary(Long userId, Long diaryId) {
+        Long prevId = diaryId - 1;
+        Long nextId = diaryId + 1;
+        Diary prevDiary = diaryMapper.selectByIdAndUserId(prevId, userId);
+        Diary nextDiary = diaryMapper.selectByIdAndUserId(nextId, userId);
+        List<DiaryVO> diaryVOList = new ArrayList<>();
+        // 备注：前一天的日记放在索引0，后一天的日记放在索引1
+        diaryVOList.set(0,convertToVO(prevDiary));
+        diaryVOList.set(1,convertToVO(nextDiary));
+        return diaryVOList;
+    }
+
+    @Override
+    public List<DiaryExportVO> getExportData() {
+        Long userId = SecurityUtil.getCurrentUserId();
+        List<Diary> diaryList = diaryMapper.selectExportData(userId);
+        return diaryList.stream()
+                .map(this::convertToExportVO)
+                .collect(Collectors.toList());
+    }
+
+    public DiaryExportVO convertToExportVO(Diary diary) {
+        DiaryExportVO diaryExportVO = new DiaryExportVO();
+        diaryExportVO.setDiaryId(diary.getId());
+        String content = diary.getContent();
+        if (!content.isEmpty()) {
+            diaryExportVO.setContent(content.substring(0, 20) + "...");
+        } else {
+            diaryExportVO.setContent(content);
+        }
+        diaryExportVO.setMoodType(diary.getMoodType());
+        if (diary.getCreatedAt() != null) {
+            // 使用 Java 8 标准日期格式化器
+            java.time.format.DateTimeFormatter formatter =
+                    java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            diaryExportVO.setCreatedAt(diary.getCreatedAt().format(formatter));
+        }
+        return diaryExportVO;
     }
 
 }

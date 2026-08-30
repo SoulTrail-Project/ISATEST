@@ -63,6 +63,13 @@ public interface DiaryMapper {
 
     List<String> selectAllMoodType(@Param("userId") Long userId);
 
+    List<Diary> selectKeyword(@Param("userId") Long userId,
+                              @Param("keyword") String keyword,
+                              @Param("offset") int offset,
+                              @Param("pageSize") int pageSize);
+
+    List<Diary> selectExportData(@Param("userId") Long userId);
+
     /**
      * 接口30：本周记录统计（本周一 00:00 至今）
      * @return key: recordDays(有日记的天数) / totalCount(日记总篇数)

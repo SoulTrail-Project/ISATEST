@@ -14,7 +14,7 @@ public interface StatsService {
     List<EmotionDistributionVO> getEmotionDistribution(Long userId);
     // interface_11
     List<WordCloudVO> getWordCloud(Long userId);
-    // interface_21 情绪频率, 按时间维度统计(7/30/all)，只统计当前登录用户
+    // interface_21
     Map<String,Long> getEmotionalFrequency(Long userId, String days);
 
     // interface_30 本周记录

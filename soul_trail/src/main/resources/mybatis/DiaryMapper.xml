@@ -137,6 +137,20 @@
         LIMIT #{limit}
     </select>
 
+    <select id="selectKeyword" resultType="com.sixth.soul_trail.pojo.Diary">
+        select * from diary
+        where user_id = #{userId}
+        and match(content) against(#{keyword} in boolean mode)
+        order by created_at DESC
+        limit #{offset},#{pageSize}
+    </select>
+
+    <select id="selectExportData" resultType="com.sixth.soul_trail.pojo.Diary">
+        select id,content,created_at,mood_type
+        from diary where user_id = #{userId}
+        order by created_at DESC
+    </select>
+
     <!-- 接口30：本周记录统计（本周一 00:00 至今，只统计本人未删除日记） -->
     <select id="selectWeeklyRecord" resultType="java.util.Map">
         SELECT COUNT(DISTINCT diary_date) AS recordDays,
