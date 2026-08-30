@@ -1,9 +1,6 @@
 package com.sixth.soul_trail.service;
 
-import com.sixth.soul_trail.VO.DiaryStatisticsData;
-import com.sixth.soul_trail.VO.TrendVo;
-import com.sixth.soul_trail.VO.EmotionDistributionVO;
-import com.sixth.soul_trail.VO.WordCloudVO;
+import com.sixth.soul_trail.VO.*;
 
 import java.util.List;
 import java.util.Map;
@@ -19,4 +16,10 @@ public interface StatsService {
     List<WordCloudVO> getWordCloud(Long userId);
     // interface_21 情绪频率, 按时间维度统计(7/30/all)，只统计当前登录用户
     Map<String,Long> getEmotionalFrequency(Long userId, String days);
+
+    // interface_30 本周记录
+    WeeklyRecordVO getWeeklyRecord(Long userId);
+    // interface_31 本周最多情绪
+    TopMoodVO getWeeklyTopMood(Long userId);
+
 }

@@ -77,6 +77,26 @@ public class StatsController {
         return Result.success(data);
     }
 
+    // interface_30 本周记录
+    @GetMapping("/weekly/records")
+    public Result<WeeklyRecordVO> getWeeklyRecord() {
+        Long userId = SecurityUtil.getCurrentUserId();
+        if (userId == null) {
+            return new Result<>(401, "未登录或Token已过期", null);
+        }
+        return Result.success(statsService.getWeeklyRecord(userId));
+    }
+
+    // interface_31 本周最多情绪
+    @GetMapping("/weekly/top-mood")
+    public Result<TopMoodVO> getWeeklyTopMood() {
+        Long userId = SecurityUtil.getCurrentUserId();
+        if (userId == null) {
+            return new Result<>(401, "未登录或Token已过期", null);
+        }
+        // 本周无日记时 data 为 null
+        return Result.success(statsService.getWeeklyTopMood(userId));
+    }
 
 
 

@@ -1,9 +1,6 @@
 package com.sixth.soul_trail.service.Impl;
 
-import com.sixth.soul_trail.VO.TrendVo;
-import com.sixth.soul_trail.VO.DiaryStatisticsData;
-import com.sixth.soul_trail.VO.EmotionDistributionVO;
-import com.sixth.soul_trail.VO.WordCloudVO;
+import com.sixth.soul_trail.VO.*;
 import com.sixth.soul_trail.common.MoodTypeEnum;
 import com.sixth.soul_trail.mapper.DiaryMapper;
 import com.sixth.soul_trail.mapper.DiaryKeywordMapper;
@@ -13,6 +10,8 @@ import com.sixth.soul_trail.service.StatsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -75,5 +74,40 @@ public class StatsServiceImpl implements StatsService{
         return emotionalFrequencyList.stream()
                 .collect(Collectors.groupingBy(String::toString,Collectors.counting()));
     }
+
+    @Override
+    public WeeklyRecordVO getWeeklyRecord(Long userId) {
+        Map<String, Object> row = diaryMapper.selectWeeklyRecord(userId);
+        WeeklyRecordVO vo = new WeeklyRecordVO();
+        if (row == null || row.get("recordDays") == null) {
+            vo.setRecordDays(0L);
+            vo.setTotalCount(0L);
+        } else {
+            vo.setRecordDays(((Number) row.get("recordDays")).longValue());
+            vo.setTotalCount(((Number) row.get("totalCount")).longValue());
+        }
+        LocalDate today = LocalDate.now();
+        LocalDate monday = today.with(DayOfWeek.MONDAY);   // 本周周一
+        vo.setWeekStart(monday.toString());
+        vo.setWeekEnd(today.toString());
+        return vo;
+    }
+
+    @Override
+    public TopMoodVO getWeeklyTopMood(Long userId) {
+        Map<String, Object> row = diaryMapper.selectWeeklyTopMood(userId);
+        if (row == null || row.get("moodType") == null) {
+            return null;   // 本周无日记，前端显示空状态
+        }
+        String moodType = (String) row.get("moodType");
+        MoodTypeEnum mood = MoodTypeEnum.getByCode(moodType);
+        TopMoodVO vo = new TopMoodVO();
+        vo.setMoodType(moodType);
+        vo.setMoodName(mood != null ? mood.getName() : moodType);
+        vo.setColor(mood != null ? mood.getThemeColor() : "#999999");
+        vo.setCount(((Number) row.get("cnt")).longValue());
+        return vo;
+    }
+
 
 }

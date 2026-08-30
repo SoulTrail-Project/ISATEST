@@ -136,4 +136,30 @@
         ORDER BY COUNT(*) DESC, MAX(d.created_at) DESC
         LIMIT #{limit}
     </select>
+
+    <!-- 接口30：本周记录统计（本周一 00:00 至今，只统计本人未删除日记） -->
+    <select id="selectWeeklyRecord" resultType="java.util.Map">
+        SELECT COUNT(DISTINCT diary_date) AS recordDays,
+               COUNT(*)                   AS totalCount
+        FROM diary
+        WHERE user_id = #{userId}
+          AND is_deleted = 0
+          AND diary_date >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)
+          AND diary_date &lt;= CURDATE()
+    </select>
+
+    <!-- 接口31：本周出现次数最多的情绪（并列取最近一篇，口径同接口25） -->
+    <select id="selectWeeklyTopMood" resultType="java.util.Map">
+        SELECT mood_type AS moodType,
+               COUNT(*)  AS cnt
+        FROM diary
+        WHERE user_id = #{userId}
+          AND is_deleted = 0
+          AND diary_date >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)
+          AND diary_date &lt;= CURDATE()
+        GROUP BY mood_type
+        ORDER BY cnt DESC, MAX(created_at) DESC
+        LIMIT 1
+    </select>
+
 </mapper>
