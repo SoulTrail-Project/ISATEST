@@ -62,4 +62,24 @@ public interface DiaryMapper {
                                           @Param("days") int days);
 
     List<String> selectAllMoodType(@Param("userId") Long userId);
+
+    List<Diary> selectKeyword(@Param("userId") Long userId,
+                              @Param("keyword") String keyword,
+                              @Param("offset") int offset,
+                              @Param("pageSize") int pageSize);
+
+    List<Diary> selectExportData(@Param("userId") Long userId);
+
+    /**
+     * 接口30：本周记录统计（本周一 00:00 至今）
+     * @return key: recordDays(有日记的天数) / totalCount(日记总篇数)
+     */
+    Map<String, Object> selectWeeklyRecord(@Param("userId") Long userId);
+
+    /**
+     * 接口31：本周出现次数最多的情绪（并列时取最近写的一篇）
+     * @return key: moodType(情绪码) / cnt(次数)；本周无日记时返回 null
+     */
+    Map<String, Object> selectWeeklyTopMood(@Param("userId") Long userId);
+
 }

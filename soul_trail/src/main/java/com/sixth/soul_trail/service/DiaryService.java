@@ -1,9 +1,6 @@
 package com.sixth.soul_trail.service;
 
-import com.sixth.soul_trail.VO.DiaryCreateRequestVO;
-import com.sixth.soul_trail.VO.DiaryUpdateRequestVO;
-import com.sixth.soul_trail.VO.DiaryVO;
-import com.sixth.soul_trail.VO.DiaryPageVO;
+import com.sixth.soul_trail.VO.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -34,4 +31,10 @@ public interface DiaryService {
      * @param limit 返回条数，前端「本周小回顾」一般取 2 条
      */
     List<String> getTopTags(Long userId, int limit);
+
+    DiaryPageVO getDiaryByKeyword(Long userId, String keyword, int page, int pageSize);
+
+    List<DiaryVO> getPrevNextDiary(Long userId, Long diaryId);
+
+    List<DiaryExportVO> getExportData();
 }

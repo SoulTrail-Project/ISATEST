@@ -1,13 +1,21 @@
 package com.sixth.soul_trail.controller;
 
+import com.alibaba.excel.EasyExcel;
 import com.sixth.soul_trail.VO.CalendarViewVO;
+import com.sixth.soul_trail.VO.DiaryExportVO;
 import com.sixth.soul_trail.VO.HeatmapDayVO;
 import com.sixth.soul_trail.VO.MoodThemeVO;
 import com.sixth.soul_trail.common.Result;
+import com.sixth.soul_trail.service.DiaryService;
 import com.sixth.soul_trail.service.DiaryStatsService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -20,6 +28,8 @@ public class DiaryStatsController {
 
     @Autowired
     private DiaryStatsService diaryStatsService;
+    @Autowired
+    private DiaryService diaryService;
 
     /**
      * 接口6：日历视图（按天情感汇总）
@@ -57,7 +67,19 @@ public class DiaryStatsController {
         List<MoodThemeVO> data = diaryStatsService.getAllMoodTypes();
         return Result.success(data);
     }
-//
-//    @GetMapping("/stats/emotion-distribution")
-//    public Result<>
+
+    // interface_29
+    @PostMapping("/export/excel")
+    public Result<String> exportExcel(HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("utf-8");
+        String fileName = URLEncoder.encode("日记数据_" + LocalDate.now(), StandardCharsets.UTF_8).replaceAll("\\+","%20");
+        response.setHeader("Content-Disposition","attachment;filename*=utf-8''" + fileName + ".xlsx");
+        List<DiaryExportVO> exportData = diaryService.getExportData();
+        EasyExcel.write(response.getOutputStream(), DiaryExportVO.class)
+                .sheet("日记列表")
+                .doWrite(exportData);
+        return Result.success("已导出excel, 请查看浏览器弹窗");
+    }
+
 }
