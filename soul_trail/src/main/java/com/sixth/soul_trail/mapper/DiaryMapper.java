@@ -62,4 +62,11 @@ public interface DiaryMapper {
                                           @Param("days") int days);
 
     List<String> selectAllMoodType(@Param("userId") Long userId);
+
+    List<Diary> selectKeyword(@Param("userId") Long userId,
+                              @Param("keyword") String keyword,
+                              @Param("offset") int offset,
+                              @Param("pageSize") int pageSize);
+
+    List<Diary> selectExportData(@Param("userId") Long userId);
 }

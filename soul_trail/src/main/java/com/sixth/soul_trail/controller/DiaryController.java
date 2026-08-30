@@ -114,4 +114,23 @@ public class DiaryController {
         return Result.success(diaryService.getTopTags(userId, limit));
     }
 
+    @GetMapping(params = "keywords")
+    public Result<DiaryPageVO> getDiaryByKeyword(@RequestParam(defaultValue = "") String keyword,
+                                                 @RequestParam(defaultValue = "1") int page,
+                                                 @RequestParam(defaultValue = "10") int pageSize) {
+        if (keyword.isEmpty()) {
+            return Result.error(401,"关键词不能为空");
+        }
+        Long userId = SecurityUtil.getCurrentUserId();
+        DiaryPageVO diaryPageVO = diaryService.getDiaryByKeyword(userId, keyword, page, pageSize);
+        return Result.success(diaryPageVO);
+    }
+
+    @GetMapping("/{id}/prev-next")
+    public Result<List<DiaryVO>> getPrevNextDiary(@PathVariable("id") Long diaryId) {
+        Long userId = SecurityUtil.getCurrentUserId();
+        List<DiaryVO> diaryVOList = diaryService.getPrevNextDiary(userId, diaryId);
+        return Result.success(diaryVOList);
+    }
+
 }

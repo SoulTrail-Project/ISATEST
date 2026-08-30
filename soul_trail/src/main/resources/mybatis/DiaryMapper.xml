@@ -136,4 +136,18 @@
         ORDER BY COUNT(*) DESC, MAX(d.created_at) DESC
         LIMIT #{limit}
     </select>
+
+    <select id="selectKeyword" resultType="com.sixth.soul_trail.pojo.Diary">
+        select * from diary
+        where user_id = #{userId}
+        and match(content) against(#{keyword} in boolean mode)
+        order by created_at DESC
+        limit #{offset},#{pageSize}
+    </select>
+
+    <select id="selectExportData" resultType="com.sixth.soul_trail.pojo.Diary">
+        select id,content,created_at,mood_type
+        from diary where user_id = #{userId}
+        order by created_at DESC
+    </select>
 </mapper>
