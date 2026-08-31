@@ -17,10 +17,17 @@ spring:
   #  url: jdbc:mysql://rm-bp1cx5758n1ea967j3o.mysql.rds.aliyuncs.com:3306/soultraildb?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
 
   # 内网地址
-    url: "jdbc:mysql://rm-bp1cx5758n1ea967j.mysql.rds.aliyuncs.com:3306/soultraildb?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8&allowPublicKeyRetrieval=true"
+    #url: "jdbc:mysql://rm-bp1cx5758n1ea967j.mysql.rds.aliyuncs.com:3306/soultraildb?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8&allowPublicKeyRetrieval=true"
+# 新的实例外网地址
+    url: "jdbc:mysql://rm-bp1yu95wqj3uy48vkho.mysql.rds.aliyuncs.com:3306/soultraildb?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8&allowPublicKeyRetrieval=true"
 
-    username: soultrail
-    password: Soul1234567
+# 新内网地址
+    #url: "rm-bp1yu95wqj3uy48vk.mysql.rds.aliyuncs.com:3306/soultraildb?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8&allowPublicKeyRetrieval=true"
+#    username: soultrail
+#    password: Soul1234567
+    #新账号
+    username: soulTrail
+    password: Soul_Trail123
     driver-class-name: com.mysql.cj.jdbc.Driver
     # HikariCP 为 Spring Boot 默认连接池，以下为可选调优项 (先不管)
     hikari:
