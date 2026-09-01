@@ -147,15 +147,22 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
     @Override
-    public DiaryVO getDiaryByDate(LocalDate localDate, Long userId) {
-        Diary diary = diaryMapper.selectDiaryDate(localDate, userId);
-
-        if (diary == null) {
+    public List<DiaryVO> getDiaryByDate(LocalDate localDate, Long userId) {
+        List<Diary> diaryList = diaryMapper.selectDiaryDate(localDate, userId);
+        if (diaryList.isEmpty()) {
             return null;   // 前端拿到 data = null，符合文档约定
         }
-
-        // 走统一的 convertToVO，否则标签和 score 都会丢失（原来这里是直接 BeanUtils.copyProperties）
-        return convertToVO(diary);
+        List<DiaryVO> diaryVOList = new ArrayList<>();
+        for (Diary diary : diaryList) {
+            DiaryVO diaryVO = new DiaryVO();
+            BeanUtils.copyProperties(diary, diaryVO);
+            if (diary.getSentimentScore() != null) {
+                diaryVO.setScore(diary.getSentimentScore().floatValue());
+            }
+            diaryVO.setTags(fromJsonArray(diary.getTags()));
+            diaryVOList.add(diaryVO);
+        }
+        return diaryVOList;
     }
 
     @Override

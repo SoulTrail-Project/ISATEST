@@ -23,7 +23,7 @@ public interface DiaryService {
 
     void delete(Long userId, Long diaryId);
 
-    DiaryVO getDiaryByDate(LocalDate localDate, Long userId);
+    List<DiaryVO> getDiaryByDate(LocalDate localDate, Long userId);
 
     /**
      * 本周高频标签：按本周一至今，从 diary.tags 统计使用次数倒排

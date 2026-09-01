@@ -5,8 +5,6 @@ import com.sixth.soul_trail.VO.DiaryUpdateRequestVO;
 import com.sixth.soul_trail.VO.DiaryVO;
 import com.sixth.soul_trail.VO.DiaryPageVO;
 import com.sixth.soul_trail.common.Result;
-import com.sixth.soul_trail.mapper.DiaryMapper;
-import com.sixth.soul_trail.pojo.Diary;
 import com.sixth.soul_trail.service.DiaryService;
 import com.sixth.soul_trail.utils.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +19,6 @@ public class DiaryController {
 
     @Autowired
     private DiaryService diaryService;
-    @Autowired
-    private DiaryMapper diaryMapper;
 
     /**
      * POST /api/diaries
@@ -93,18 +89,17 @@ public class DiaryController {
      * 按日期查当天日记。没有则 data 为 null
      */
     @GetMapping(params = "date")
-    public Result<DiaryVO> getDiaryByDate(@RequestParam(defaultValue = "2026-01-01") String date) {
+    public Result<List<DiaryVO>> getDiaryByDate(@RequestParam(defaultValue = "2026-01-01") String date) {
         Long userId = SecurityUtil.getCurrentUserId();
         LocalDate localDate = LocalDate.parse(date);
-        DiaryVO diaryVO = diaryService.getDiaryByDate(localDate, userId);
-        return Result.success(diaryVO);
+        List<DiaryVO> diaryVOList = diaryService.getDiaryByDate(localDate, userId);
+        return Result.success(diaryVOList);
     }
 
     /**
      * GET /api/diaries/tags/top?limit=5
      * 本周高频标签：统计本周一至今，哪些标签在日记里出现得最多
      * 用于前端「本周小回顾 → 高频标签」，设计图里展示 2 个，所以前端一般传 limit=2
-     *
      * 注意：这个接口读的是 diary.tags（日记实际打的标签），
      *      跟 GET /api/tags（用户标签库，存在 user_tag 表）是两套数据，别混用
      */
