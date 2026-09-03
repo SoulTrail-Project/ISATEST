@@ -1,0 +1,83 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/todayMood",
+			"style": {
+				"navigationBarTitleText": "今日心情",
+				"app-plus": {
+					"titleNView": false
+				},
+				"h5": {
+					"titleNView": false
+				}
+			}
+		},
+		{
+			"path": "pages/myDiary",
+			"style": {
+				"navigationBarTitleText": "我的日记",
+				"app-plus": {
+					"titleNView": false
+				},
+				"h5": {
+					"titleNView": false
+				}
+			}
+		},
+		{
+			"path": "pages/moodData",
+			"style": {
+				"navigationBarTitleText": "情绪数据",
+				"app-plus": {
+					"titleNView": false
+				},
+				"h5": {
+					"titleNView": false
+				}
+			}
+		},
+		{
+			"path": "pages/moodCalendar",
+			"style": {
+				"navigationBarTitleText": "情绪日历",
+				"app-plus": {
+					"titleNView": false
+				},
+				"h5": {
+					"titleNView": false
+				}
+			}
+		},
+		{
+			"path": "pages/personal",
+			"style": {
+				"navigationBarTitleText": "个人中心",
+				"app-plus": {
+					"titleNView": false
+				},
+				"h5": {
+					"titleNView": false
+				}
+			}
+		}
+	],
+	// pages.json
+	// 组件自动引入规则
+	"easycom": {
+		// 是否开启自动扫描
+		"autoscan": true,
+		// 以正则方式自定义组件匹配规则
+		"custom": {
+			// uni-ui 规则如下配置
+			"^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue",
+			// 以 Xtx 开头的组件，在 components 文件夹中查找引入（需要重启服务器）
+			"^Xtx(.*)": "@/components/Xtx$1.vue"
+		}
+	},
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	}
+}
