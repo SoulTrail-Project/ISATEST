@@ -1,5 +1,5 @@
 import http from "../utils/request"
-import {getToken} from "@/utils/token.js"
+import { getToken } from "@/utils/token.js"
 
 // 用户登录
 export const loginAPI = (username, password) => {
@@ -18,16 +18,15 @@ export const loginAPI = (username, password) => {
 }
 
 // 更新日记接口
-export const addDiaryApi = (params)  =>{
-const token = getToken().token
-  return uni.request({
-    url:'/api/diaries',
-    method:'POST',
-    data:params,
-    header: {
-        "Authorization":`Bearer ${token}`,
-        'Content-Type': 'application/json'
-    }
-  })
+export const addDiaryApi = (params) => {
+    const token = getToken().token
+    return uni.request({
+        url: '/api/diaries',
+        method: 'POST',
+        data: params,
+        header: {
+            "Authorization": `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    })
 }
-
