@@ -1,5 +1,9 @@
 <script setup>
 import { ref } from 'vue'
+import MixChart from "@/components/MixChart.vue";
+import  MixLine  from "@/components/MixLine.vue";
+import MixBoon from '../components/MixBoon.vue';
+import { getMoodTrendApi, getEmotionDistributionApi } from '@/api/calendar'
 
 
 // 导航菜单
@@ -26,7 +30,7 @@ const menuList = ref([
     id:3,
     name:'数据图表',
     icon:'chart',
-    active:false,
+    active:true,
     page:'/pages/moodData',
     iconSrc:'../static/data1.svg',
     activeIconSrc:'../static/data2.svg'
@@ -44,7 +48,7 @@ const menuList = ref([
     id:5,
     name:'我的',
     icon:'user',
-    active:true,
+    active:false,
     page:'/pages/personal',
     iconSrc:'../static/person1.svg',
     activeIconSrc:'../static/person2.svg'
@@ -71,8 +75,26 @@ const toggleTag = (tag) => {
   tag.active = !tag.active
 }
 
+// 调用饼图接口
+const loadPie = async () => {
+  const [err, res] = await getEmotionDistributionApi()
+  if(!err && res.data.code === 200){
+    pieData.value = res.data.data
+  }
+}
 
+// 调用折线图接口
+const loadTrend = async () => {
+  const [err, res] = await getMoodTrendApi(7)
+  if(!err && res.data.code === 200){
+    trendData.value = res.data.data
+  }
+}
 
+onMounted(()=>{
+  loadPie()
+  loadTrend()
+})
 
 </script>
 
@@ -145,16 +167,51 @@ const toggleTag = (tag) => {
           </view>
         </view>
       </view>
-
-    
+      <div class="crx">数据图表
+        <div class="crx-li">近七天情绪趋势与心情分布</div>
+      </div>
+      <div class="nxl">
+        <div class="nxl-one">
+          <div class="cr">
+            <MixLine/>
+          </div></div>
+        <div class="nxl-two">
+          <div class="cr-a">
+            <MixChart/>
+          </div>
+        </div>
+        <div class="nxl-three">
+          <div class="cr-b">
+            <MixBoon/>
+          </div>
+        </div>
+      </div>
+      <div class="wf">
+        <div class="card">
+            <div class="card-head">
+              <span class="dot"></span>
+              <span class="card-title">本周总结</span>
+            </div>
+            <ul class="tyf">
+              <li>本周整体情绪：偏安静</li>
+              <li>最高情绪日：周三（开心）</li>
+              <li>最低情绪日：周一（悲伤）</li>
+              <li>最近情绪比较稳定，继续保持～</li>
+            </ul>
+          </div>
+      </div>
+       <view class="quote-card">
+            <text class="quote-text">情绪没有好坏，每一种都值得被看见</text>
+            <view class="quote-deco">🍃</view>
+        </view>
     </view>
   </view>
 </template>
 
 <style lang="scss" scoped>
 .background {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   display: flex;
   background: #E8E2F5;
 }
@@ -162,7 +219,7 @@ const toggleTag = (tag) => {
 /* 左侧导航栏 */
 .left {
   width: 256px;
-  height: 100%;
+  height: 920px;
   background-color: #F9F8FB;
   box-shadow: 0px 4px 10px 0px #B8A0D8;
   display: flex;
@@ -402,6 +459,106 @@ const toggleTag = (tag) => {
     }
   }
 }
+.crx {
+  font-weight: 700;
+    font-size: 32px;
+    margin-top: 15px;
+    margin-left: 36px;
+    margin-bottom: 20px;
+}
+.crx-li {
+   font-weight: 700;
+    font-size: 20px;
+}
+.nxl-one {
+  position: absolute;
+  left:290px;
+  top: 170px;
+  width: 542px;
+  height: 232px;
+  padding: 10px 25px 20px;
+  border-radius: 24.07px;
+  background-color: #F6F5FA;
+}
+.nxl-two {
+  position: absolute;
+  left: 952px;
+  top: 168px;
+   width: 352px;
+  height: 232px;
+  padding: 10px 25px 20px;
+  border-radius: 24.07px;
+   background-color: #F6F5FA;
+   overflow:hidden;
+}
+.nxl-three {
+  position: absolute;
+  left: 284px;
+  top:465px;
+  width: 1050px;
+  height: 160px;
+  padding: 10px 15px 20px;
+  border-radius: 24.07px;
+   background-color: #F6F5FA;
+   overflow:hidden;
+}
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  left: 20px;
+  top: 10px;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #7b5ce0;
+}
+.card-title {
+  font-weight: 700;
+  color: #333;
+  font-size: 20px;
+}
+.card {
+  position: absolute;
+  left: 280px;
+  top:680px;
+  width: 540px;
+  height: 232px;
+  border-radius: 24.07px;
+  background: #FFFFFF;
+}
+.tyf {
+  line-height: 2.0;
+  padding: 30px 35px 20px;
+}
+.quote-card {
+  background: linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%);
+  border-radius: 20px;
+  padding: 24px;
+  height: 105px;
+  width: 278px;
+  position: relative;
+  overflow: hidden;
+  margin-top: auto;
 
+  .quote-text {
+    font-size: 15px;
+    color: #fff;
+    line-height: 1.6;
+    font-weight: 500;
+    position: relative;
+    z-index: 1;
+  }
 
+  .quote-deco {
+    position: absolute;
+    right: 12px;
+    bottom: 8px;
+    font-size: 48px;
+    opacity: 0.3;
+  }
+}
 </style>

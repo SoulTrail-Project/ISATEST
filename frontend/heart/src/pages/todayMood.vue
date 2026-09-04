@@ -2,8 +2,6 @@
 import { ref } from 'vue'
 import Login from '../components/login.vue'
 import { addDiaryApi } from '@/api/login.js'
-import { checkAllDiaryApi, checkDiaryApi } from '../api/diary.js'
-import { onLoad } from '@dcloudio/uni-app'
 
 
 // 点击登录按钮：打开弹窗
@@ -22,6 +20,7 @@ const moodList = ref([
  { id: 6, name: '疲惫', typeCode:'tired', color: 'linear-gradient(180deg, #D4C8B8 0%, #E8DFD4 100%)', textColor: '#BFB0A3' },
 ])
 
+
 // 标签列表
 const tagList = ref([
   { id: 1, name: '开心', color: 'linear-gradient(180deg, #FFD28F 0%, #FFE8C8 100%)', textColor: '#FFB86C' },
@@ -34,28 +33,6 @@ const tagList = ref([
   { id: 8, name: '迷茫', color: 'linear-gradient(180deg, #C8C8C8 0%, #D4D4D4 100%)', textColor: '#F8C8DC' }
 ])
 
-//用来保存全部日记列表
-const diaryList = ref([])
-
-// 获得单条日记
-const getSoloDiary = async (targetId) => {
-  //先拿到全部日记数组
-  const list = await getAllDiary()
-  // 根据id查找单条数据 find找到第一条匹配的
-  const oneDiary = list.find(item => item.id === targetId)
-  console.log('根据id找到的单条日记：', oneDiary);
-}
-
-// 获得所有日记
-const getAllDiary = async () => {
-  const res = await checkAllDiaryApi()
-  const Diary = res.data.data.records
-  console.log('获得的所有日记数据',res.data.data.records);
-  console.log('获得的所有日记数据22',Diary);
-  // ✅把全部日记存到变量里
-  diaryList.value = Diary
-  return Diary // 返回数组，供外面调用
-}
 
 // 心情选择器横向滚动（每次滚一格 = 卡片宽度 + 间距）
 const scrollMood = (direction) => {
@@ -183,11 +160,7 @@ const submitDiary = async ()=>{
   }
 }
 
-//一进页面渲染去年今日的日记数据
-onLoad( async()=> {
-  // ✅传入你想要获取的日记ID，例如id=2
-  await getSoloDiary(2)
-})
+
 </script>
 
 <template>

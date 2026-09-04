@@ -35,7 +35,7 @@ const menuList = ref([
     id:4,
     name:'日历',
     icon:'calendar',
-    active:true,
+    active:false,
     page:'/pages/moodCalendar',
     iconSrc:'../static/calendar1.svg',
     activeIconSrc:'../static/calendar2.svg'
@@ -44,7 +44,7 @@ const menuList = ref([
     id:5,
     name:'我的',
     icon:'user',
-    active:false,
+    active:true,
     page:'/pages/personal',
     iconSrc:'../static/person1.svg',
     activeIconSrc:'../static/person2.svg'
@@ -145,7 +145,7 @@ const toggleTag = (tag) => {
           </view>
         </view>
       </view>
-
+      
     
     </view>
   </view>
