@@ -29,8 +29,8 @@ public class StatsController {
     }
 
     // interface_9
-    @PostMapping("/trend")
-    public Result<List<TrendVo>> getTrendStats(@RequestParam int range) {
+    @GetMapping("/trend/{range}")
+    public Result<List<TrendVo>> getTrendStats(@PathVariable int range) {
         Long userId = SecurityUtil.getCurrentUserId();
         // 4. 校验 range 参数
         if (range != 7 && range != 30) {

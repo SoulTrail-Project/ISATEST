@@ -38,7 +38,7 @@ public class TrendStatsProcessor {
         // 3. 转成 Map 便于补全
         Map<LocalDate, TrendVo> trendMap = new HashMap<>();
         for (Map<String, Object> map : maps) {
-            LocalDate date = (LocalDate) map.get("date");
+            LocalDate date = ((java.sql.Date) map.get("date")).toLocalDate();
             Double avgScore = map.get("avgScore") != null ?
                     ((Number) map.get("avgScore")).doubleValue() : null;
             Integer diaryCount = ((Number) map.get("diaryCount")).intValue();

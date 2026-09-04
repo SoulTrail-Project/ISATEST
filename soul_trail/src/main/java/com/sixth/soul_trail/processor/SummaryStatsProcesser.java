@@ -10,6 +10,7 @@ import com.sixth.soul_trail.pojo.Diary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -76,18 +77,28 @@ public class SummaryStatsProcesser {
     }
 
     public double getAverageScore(Long userId) {
-        // MyBatis-Plus 查询单个值（这里返回平均分，可能为 null）
         QueryWrapper<Diary> wrapper = new QueryWrapper<>();
         wrapper.eq("user_id", userId)
-                .select("sentiment_score"); // 只查情感分数（库列名 sentiment_score）
-        List<Double> scores = statsMapper.selectObjs(wrapper)
+                .select("sentiment_score");
+
+        return statsMapper.selectObjs(wrapper)
                 .stream()
-                .map(obj -> (Double) obj)
-                .toList();
-        return scores.stream()
+                .map(obj -> {
+                    // 1. 处理 null 值
+                    if (obj == null) return null;
+                    // 2. 安全转换为 Double（兼容 BigDecimal 和 Double）
+                    if (obj instanceof BigDecimal) {
+                        return ((BigDecimal) obj).doubleValue();
+                    } else if (obj instanceof Double) {
+                        return (Double) obj;
+                    } else {
+                        return null; // 其他类型忽略
+                    }
+                })
+                .filter(Objects::nonNull)  // 过滤掉 null
                 .mapToDouble(Double::doubleValue)
                 .average()
-                .orElse(0.0);
+                .orElse(0.0);  // 无数据时返回 0.0
     }
 
     // 私有辅助方法
@@ -161,8 +172,8 @@ public class SummaryStatsProcesser {
     public CurrentMoodSummary getCurrentMoodSummary(Long userId) {
         QueryWrapper<Diary> wrapper = new QueryWrapper<>();
         wrapper.eq("user_id", userId)
-                .groupBy("sentiment")
-                .select("sentiment", "count(*) as count")
+                .groupBy("sentiment_emotion")
+                .select("sentiment_emotion", "count(*) as count")
                 .orderByDesc("count")
                 .last("limit 1"); // 取数量最多的第一条
         List<Map<String, Object>> maps = statsMapper.selectMaps(wrapper);
