@@ -97,16 +97,16 @@ public class DiaryController {
     }
 
     /**
-     * GET /api/diaries/tags/top?limit=5
-     * 本周高频标签：统计本周一至今，哪些标签在日记里出现得最多
-     * 用于前端「本周小回顾 → 高频标签」，设计图里展示 2 个，所以前端一般传 limit=2
+     * GET /api/diaries/tags/top
+     * 本周高频标签：统计本周一至今，出现次数最多的前 2 个标签
+     * 用于前端「本周小回顾 → 高频标签」。与前端约定：固定返回 Top2，不接受 limit 参数
      * 注意：这个接口读的是 diary.tags（日记实际打的标签），
      *      跟 GET /api/tags（用户标签库，存在 user_tag 表）是两套数据，别混用
      */
     @GetMapping("/tags/top")
-    public Result<List<String>> getTopTags(@RequestParam(defaultValue = "5") int limit) {
+    public Result<List<String>> getTopTags() {
         Long userId = SecurityUtil.getCurrentUserId();
-        return Result.success(diaryService.getTopTags(userId, limit));
+        return Result.success(diaryService.getTopTags(userId));
     }
 
     @GetMapping(params = "keywords")

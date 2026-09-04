@@ -166,11 +166,12 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
     @Override
-    public List<String> getTopTags(Long userId, int limit) {
+    public List<String> getTopTags(Long userId) {
         // 统计区间：本周一 ~ 今天，对应设计图「本周小回顾」
+        // 固定返回 Top2，条数上限写死在 SQL 的 LIMIT 2，与前端约定不开放 limit 参数
         LocalDate today = LocalDate.now();
         LocalDate monday = today.with(DayOfWeek.MONDAY);
-        return diaryMapper.selectTopTagsByUserId(userId, monday, today, limit);
+        return diaryMapper.selectTopTagsByUserId(userId, monday, today);
     }
 
     // ==================== 私有工具方法 ====================

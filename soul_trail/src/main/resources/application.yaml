@@ -18,13 +18,16 @@ spring:
 
   # 内网地址
     #url: "jdbc:mysql://rm-bp1cx5758n1ea967j.mysql.rds.aliyuncs.com:3306/soultraildb?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8&allowPublicKeyRetrieval=true"
+    #    username: soultrail
+    #    password: Soul1234567
+    
 # 新的实例外网地址
-    url: "jdbc:mysql://rm-bp1yu95wqj3uy48vkho.mysql.rds.aliyuncs.com:3306/soultraildb?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8&allowPublicKeyRetrieval=true"
+#    url: "jdbc:mysql://rm-bp1yu95wqj3uy48vkho.mysql.rds.aliyuncs.com:3306/soultraildb?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8&allowPublicKeyRetrieval=true"
+
 
 # 新内网地址
-    #url: "rm-bp1yu95wqj3uy48vk.mysql.rds.aliyuncs.com:3306/soultraildb?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8&allowPublicKeyRetrieval=true"
-#    username: soultrail
-#    password: Soul1234567
+    url: "rm-bp1yu95wqj3uy48vk.mysql.rds.aliyuncs.com:3306/soultraildb?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8&allowPublicKeyRetrieval=true"
+
     #新账号
     username: soulTrail
     password: Soul_Trail123
@@ -40,4 +43,4 @@ mybatis-plus:
   type-aliases-package: com.sixth.soul_trail.pojo
   configuration:
     map-underscore-to-camel-case: true
-  #  log-impl: org.apache.ibatis.logging.stdout.StdOutImpl   # 开发期打印 SQL，上线前删掉这行
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl   # 开发期打印 SQL，上线前删掉这行

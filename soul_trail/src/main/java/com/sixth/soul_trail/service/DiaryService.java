@@ -30,7 +30,7 @@ public interface DiaryService {
      *
      * @param limit 返回条数，前端「本周小回顾」一般取 2 条
      */
-    List<String> getTopTags(Long userId, int limit);
+    List<String> getTopTags(Long userId);
 
     DiaryPageVO getDiaryByKeyword(Long userId, String keyword, int page, int pageSize);
 
