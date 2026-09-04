@@ -81,4 +81,6 @@ public interface DiaryMapper {
      */
     Map<String, Object> selectWeeklyTopMood(@Param("userId") Long userId);
 
+    long countByKeyword(@Param("userId") Long userId, @Param("keyword") String keyword);
+
 }

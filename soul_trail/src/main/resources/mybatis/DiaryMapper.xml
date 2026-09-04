@@ -138,11 +138,13 @@
     </select>
 
     <select id="selectKeyword" resultType="com.sixth.soul_trail.pojo.Diary">
-        select * from diary
-        where user_id = #{userId}
-        and match(content) against(#{keyword} in boolean mode)
-        order by created_at DESC
-        limit #{offset},#{pageSize}
+        SELECT * FROM diary
+        WHERE user_id = #{userId}
+          AND is_deleted = 0
+          AND (title LIKE CONCAT('%', #{keyword}, '%') ESCAPE '!'
+            OR content LIKE CONCAT('%', #{keyword}, '%') ESCAPE '!')
+        ORDER BY created_at DESC
+            LIMIT #{offset}, #{pageSize}
     </select>
 
     <select id="selectExportData" resultType="com.sixth.soul_trail.pojo.Diary">
@@ -174,6 +176,15 @@
         GROUP BY mood_type
         ORDER BY cnt DESC, MAX(created_at) DESC
         LIMIT 1
+    </select>
+    <!-- DiaryMapper.xml -->
+    <select id="countByKeyword" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM diary
+        WHERE user_id = #{userId}
+          AND is_deleted = 0
+          AND (title LIKE CONCAT('%', #{keyword}, '%') ESCAPE '!'
+            OR content LIKE CONCAT('%', #{keyword}, '%') ESCAPE '!')
     </select>
 
 </mapper>

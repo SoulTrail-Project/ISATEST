@@ -241,22 +241,46 @@ public class DiaryServiceImpl implements DiaryService {
         return vo;
     }
 
+    /**
+     * 转义 LIKE 通配符：把 !、%、_ 转义，避免用户输入特殊字符时搜索跑偏
+     * （如搜 "50%" 会误匹配 "500"，搜 "a_b" 会误匹配 "aXb"）。
+     * 规则与 SQL 里的 ESCAPE '!' 一一对应。
+     */
+    private String escapeKeyword(String keyword) {
+        if (keyword == null) return "";
+        return keyword.trim()
+                .replace("!", "!!")
+                .replace("%", "!%")
+                .replace("_", "!_");
+    }
+
     @Override
     public DiaryPageVO getDiaryByKeyword(Long userId, String keyword, int page, int pageSize) {
         int offset = (page - 1) * pageSize;
-        List<Diary> diaryList = diaryMapper.selectKeyword(userId,keyword,offset,pageSize);
-        long total = diaryMapper.countByUserId(userId);
+
+        // 转义后再查，避免 LIKE 通配符导致搜索不准
+        String kw = escapeKeyword(keyword);
+
+        // 1. 查询搜索匹配的日记列表
+        List<Diary> diaryList = diaryMapper.selectKeyword(userId, kw, offset, pageSize);
+
+        // 2. 统计搜索匹配的总数（关键修改）
+        long total = diaryMapper.countByKeyword(userId, kw);  // ← 改用 countByKeyword
+
+        // 3. 转换为 VO
         List<DiaryVO> diaryVOList = new ArrayList<>();
         for (Diary diary : diaryList) {
             diaryVOList.add(convertToVO(diary));
         }
+
+        // 4. 封装返回
         DiaryPageVO diaryPageVO = new DiaryPageVO();
         diaryPageVO.setRecords(diaryVOList);
         diaryPageVO.setTotal(total);
         diaryPageVO.setPage(page);
         diaryPageVO.setPageSize(pageSize);
         return diaryPageVO;
-    };
+    }
 
     @Override
     public List<DiaryVO> getPrevNextDiary(Long userId, Long diaryId) {
@@ -265,9 +289,8 @@ public class DiaryServiceImpl implements DiaryService {
         Diary prevDiary = diaryMapper.selectByIdAndUserId(prevId, userId);
         Diary nextDiary = diaryMapper.selectByIdAndUserId(nextId, userId);
         List<DiaryVO> diaryVOList = new ArrayList<>();
-        // 备注：前一天的日记放在索引0，后一天的日记放在索引1
-        diaryVOList.set(0,convertToVO(prevDiary));
-        diaryVOList.set(1,convertToVO(nextDiary));
+        diaryVOList.add(prevDiary != null ? convertToVO(prevDiary) : null);
+        diaryVOList.add(nextDiary != null ? convertToVO(nextDiary) : null);
         return diaryVOList;
     }
 
