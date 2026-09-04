@@ -134,7 +134,7 @@
           AND JSON_LENGTH(d.tags) > 0
         GROUP BY jt.tag
         ORDER BY COUNT(*) DESC, MAX(d.created_at) DESC
-        LIMIT #{limit}
+        LIMIT 2
     </select>
 
     <select id="selectKeyword" resultType="com.sixth.soul_trail.pojo.Diary">

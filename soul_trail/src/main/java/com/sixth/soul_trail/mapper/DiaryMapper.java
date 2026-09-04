@@ -43,20 +43,19 @@ public interface DiaryMapper {
                                    @Param("end") LocalDate end,
                                    @Param("limit") Integer limit);
 
-    Diary selectDiaryDate(@Param("diaryDate") LocalDate diaryDate,
+    List<Diary> selectDiaryDate(@Param("diaryDate") LocalDate diaryDate,
                           @Param("userId") Long userId);
 
     /**
      * 本周高频标签：从 diary.tags（JSON 数组列）拆出每个标签并统计次数
+     * 固定返回出现次数最多的 2 个（SQL 里 LIMIT 2），不开放条数参数
      *
      * @param startDate 起始日期（传本周一）
      * @param endDate   结束日期（传今天）
-     * @param limit     返回条数
      */
     List<String> selectTopTagsByUserId(@Param("userId") Long userId,
                                        @Param("startDate") LocalDate startDate,
-                                       @Param("endDate") LocalDate endDate,
-                                       @Param("limit") Integer limit);
+                                       @Param("endDate") LocalDate endDate);
 
     List<String> selectEmotionalFrequency(@Param("userId") Long userId,
                                           @Param("days") int days);

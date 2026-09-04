@@ -23,14 +23,14 @@ public interface DiaryService {
 
     void delete(Long userId, Long diaryId);
 
-    DiaryVO getDiaryByDate(LocalDate localDate, Long userId);
+    List<DiaryVO> getDiaryByDate(LocalDate localDate, Long userId);
 
     /**
      * 本周高频标签：按本周一至今，从 diary.tags 统计使用次数倒排
      *
      * @param limit 返回条数，前端「本周小回顾」一般取 2 条
      */
-    List<String> getTopTags(Long userId, int limit);
+    List<String> getTopTags(Long userId);
 
     DiaryPageVO getDiaryByKeyword(Long userId, String keyword, int page, int pageSize);
 
