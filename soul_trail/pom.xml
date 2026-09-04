@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.sixth</groupId>
     <artifactId>soul_trail</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
     <name>soul_trail</name>
     <description>soul_trail</description>
     <url/>

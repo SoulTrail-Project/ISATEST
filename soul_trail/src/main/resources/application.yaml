@@ -26,7 +26,7 @@ spring:
 
 
 # 新内网地址
-    url: "rm-bp1yu95wqj3uy48vk.mysql.rds.aliyuncs.com:3306/soultraildb?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8&allowPublicKeyRetrieval=true"
+    url: "jdbc:mysql://rm-bp1yu95wqj3uy48vk.mysql.rds.aliyuncs.com:3306/soultraildb?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8&allowPublicKeyRetrieval=true"
 
     #新账号
     username: soulTrail
