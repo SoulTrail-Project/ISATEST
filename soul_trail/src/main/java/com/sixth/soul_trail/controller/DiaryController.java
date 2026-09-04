@@ -109,12 +109,12 @@ public class DiaryController {
         return Result.success(diaryService.getTopTags(userId));
     }
 
-    @GetMapping(params = "keywords")
+    @GetMapping(params = "keyword")
     public Result<DiaryPageVO> getDiaryByKeyword(@RequestParam(defaultValue = "") String keyword,
                                                  @RequestParam(defaultValue = "1") int page,
                                                  @RequestParam(defaultValue = "10") int pageSize) {
-        if (keyword.isEmpty()) {
-            return Result.error(401,"关键词不能为空");
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return Result.error(400,"关键词不能为空");
         }
         Long userId = SecurityUtil.getCurrentUserId();
         DiaryPageVO diaryPageVO = diaryService.getDiaryByKeyword(userId, keyword, page, pageSize);
